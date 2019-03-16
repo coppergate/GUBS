@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Supply">
+      <UniqueIdentifier>{ca6cea82-54b8-4f56-99b2-849d7e4f71b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Supply">
+      <UniqueIdentifier>{8dc1d49f-049f-41b0-ad90-fd8763960fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Infrastructure">
+      <UniqueIdentifier>{800952f3-f352-43b8-a12d-f3d051094aef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Infrastructure">
+      <UniqueIdentifier>{cd721e93-4ff1-43f6-ad15-e7d618051f07}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUBS.Interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionDetractor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyConsumer.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyConsumption.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyContainer.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyDefinitionCatalog.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyLevelDefinition.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyRequirement.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="Volume.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="infrastructure.h">
+      <Filter>Header Files\Infrastructure</Filter>
+    </ClInclude>
+    <ClInclude Include="SupplyQuantity.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitSupplyElement.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitSupply.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUBS.Components.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionDetractor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyConsumer.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyConsumption.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyContainer.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyDefinitionCatalog.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyLevelDefinition.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyRequirement.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="Volume.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="SupplyQuantity.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="Supply.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitSupplyElement.cpp">
+      <Filter>Source Files\Supply</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitSupply.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
