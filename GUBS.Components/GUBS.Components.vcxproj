@@ -98,7 +98,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components\SupportClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components\SupportClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,7 +135,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components\SupportClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,7 +155,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components\SupportClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,22 +170,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ActionDetractor.h" />
-    <ClInclude Include="enums.h" />
+    <ClInclude Include="Supply\SupplyTypes\Supply_Ammunition.h" />
+    <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h" />
+    <ClInclude Include="SupportClasses\enums.h" />
     <ClInclude Include="GUBS.Interfaces.h" />
-    <ClInclude Include="infrastructure.h" />
+    <ClInclude Include="SupportClasses\infrastructure.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="SupplyQuantity.h" />
-    <ClInclude Include="SupplyConsumer.h" />
-    <ClInclude Include="SupplyConsumption.h" />
-    <ClInclude Include="SupplyContainer.h" />
-    <ClInclude Include="Supply.h" />
-    <ClInclude Include="SupplyDefinitionCatalog.h" />
-    <ClInclude Include="SupplyLevelDefinition.h" />
-    <ClInclude Include="SupplyRequirement.h" />
+    <ClInclude Include="Supply\SupplyQuantity.h" />
+    <ClInclude Include="Supply\SupplyConsumer.h" />
+    <ClInclude Include="Supply\SupplyConsumption.h" />
+    <ClInclude Include="Supply\SupplyContainer.h" />
+    <ClInclude Include="Supply\SupplyTypes\Supply.h" />
+    <ClInclude Include="Supply\SupplyDefinitionCatalog.h" />
+    <ClInclude Include="Supply\SupplyLevelDefinition.h" />
+    <ClInclude Include="Supply\SupplyRequirement.h" />
+    <ClInclude Include="Supply\SupplyTypes\Supply_Power.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="UnitSupply.h" />
-    <ClInclude Include="UnitSupplyElement.h" />
-    <ClInclude Include="Volume.h" />
+    <ClInclude Include="Supply\UnitSupply.h" />
+    <ClInclude Include="Supply\UnitSupplyElement.h" />
+    <ClInclude Include="SupportClasses\Volume.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionDetractor.cpp" />
@@ -197,17 +200,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SupplyQuantity.cpp" />
-    <ClCompile Include="SupplyConsumer.cpp" />
-    <ClCompile Include="SupplyConsumption.cpp" />
-    <ClCompile Include="SupplyContainer.cpp" />
-    <ClCompile Include="Supply.cpp" />
-    <ClCompile Include="SupplyDefinitionCatalog.cpp" />
-    <ClCompile Include="SupplyLevelDefinition.cpp" />
-    <ClCompile Include="SupplyRequirement.cpp" />
-    <ClCompile Include="UnitSupply.cpp" />
-    <ClCompile Include="UnitSupplyElement.cpp" />
-    <ClCompile Include="Volume.cpp" />
+    <ClCompile Include="Supply\Source\SupplyQuantity.cpp" />
+    <ClCompile Include="Supply\Source\SupplyConsumer.cpp" />
+    <ClCompile Include="Supply\Source\SupplyConsumption.cpp" />
+    <ClCompile Include="Supply\Source\SupplyContainer.cpp" />
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply.cpp" />
+    <ClCompile Include="Supply\Source\SupplyDefinitionCatalog.cpp" />
+    <ClCompile Include="Supply\Source\SupplyLevelDefinition.cpp" />
+    <ClCompile Include="Supply\Source\SupplyRequirement.cpp" />
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Power.cpp" />
+    <ClCompile Include="Supply\Source\UnitSupply.cpp" />
+    <ClCompile Include="Supply\Source\UnitSupplyElement.cpp" />
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Ammunition.cpp" />
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Lubrication.cpp" />
+    <ClCompile Include="SupportClasses\Volume.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

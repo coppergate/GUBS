@@ -5,6 +5,9 @@
 
 #include "ActionDetractor.h"
 #include "Supply.h"
+#include "Supply_Ammunition.h"
+#include "Supply_Lubrication.h"
+#include "Supply_Power.h"
 #include "SupplyConsumer.h"
 #include "SupplyConsumption.h"
 #include "SupplyContainer.h"
@@ -48,9 +51,9 @@ namespace GUBSTests
 
 		TEST_METHOD(CreateSupplyDefTest)
 		{
-			DBUG("TEST");
-			_Supply* supplyDef = new _Supply(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplyType::AMMUNITION, SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
+			DBUG("CreateSupplyDefTest");
+			_Supply* supplyDef = new Supply_Ammunition(0, "9mm-hp", "9mm, hollow-point, copper jacket",
+				SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
 
 			delete supplyDef;
 		}
@@ -58,16 +61,17 @@ namespace GUBSTests
 		TEST_METHOD(CreateSupplyDefCatalogTest)
 		{
 
-			_Supply supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplyType::AMMUNITION, SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
+			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
+				 SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
 			SupplyDefinitionCatalog* catalog = new SupplyDefinitionCatalog();
-			unsigned long key = catalog->AddOrUpdateSupplyDefinition(supplyDef);
+			unsigned long key = catalog->EnsureSupplyDefinition(supplyDef);
 
 			const _Supply& retVal = catalog->GetSupplyDef(key);
 			Assert::AreEqual(supplyDef.fullHash(), retVal.fullHash());
 
 			const _Supply& retVal1 = catalog->GetSupplyDef(100);
-
+			Assert::IsTrue(retVal1.isEmptySupply());
+				
 			delete catalog;
 
 
@@ -75,8 +79,8 @@ namespace GUBSTests
 
 		TEST_METHOD(CreateSupplyTest)
 		{
-			_Supply supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplyType::AMMUNITION, SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
+			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
+				 SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
 
 			SupplyQuantity supply(supplyDef, 100.0f);
 
@@ -85,8 +89,8 @@ namespace GUBSTests
 		TEST_METHOD(CreateSupplyContainerTest)
 		{
 			//	1 piece of ammunition definition
-			_Supply supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplyType::AMMUNITION, SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
+			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
+				 SupplySubType::SOLID, MeasurementUnit::EACH, .0010f, Volume(.009f, .009f, .0026f));
 			//	1 piece supply quantity
 			SupplyQuantity supply(supplyDef, 1.0f);
 			//	1 container with supply of 100 pieces
@@ -99,8 +103,8 @@ namespace GUBSTests
 		TEST_METHOD(CreateSupplyRequirementTest)
 		{
 			//	1 litre of diesel fuel
-			_Supply supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplyType::POWER, SupplySubType::LIQUID, MeasurementUnit::LITER, .430f, Volume(.1f, .1f, .1f));
+			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
+				 SupplySubType::LIQUID, MeasurementUnit::LITER, .430f, Volume(.1f, .1f, .1f));
 			//	1 litre supply quantity
 			SupplyQuantity supply(supplyDef, 1.0f);
 			//	Requirement container of 1000 litre
@@ -121,7 +125,7 @@ namespace GUBSTests
 			//	Unsupplied creates a 100% movement detractor (no fuel)
 			requirement.SetSupplyLevel(SupplyLevel::UNSUPPLIED, 0, 1.0, 0.0, 0.0);
 
-			//	The result of running out of fuel, requiring resupply, occurs o seconds after supply is exhausted
+			//	The result of running out of fuel, requiring resupply, occurs 0 seconds after supply is exhausted
 			requirement.SetUnsuppliedOutcome(UnsuppliedOutcome::REQUIRES_RESUPPLY, 0, MeasurementUnit::SECOND);
 
 		}
@@ -129,8 +133,8 @@ namespace GUBSTests
 		TEST_METHOD(CreateSupplyConsumptionTest)
 		{
 			//	1 litre of diesel fuel
-			_Supply supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplyType::POWER, SupplySubType::LIQUID, MeasurementUnit::LITER, .43f, Volume(.1f, .1f, .1f));
+			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
+				 SupplySubType::LIQUID, MeasurementUnit::LITER, .43f, Volume(.1f, .1f, .1f));
 
 			//	1 litre supply quantity
 			SupplyQuantity consumptionSupplyQuantity(supplyDef, 1.0f);
@@ -142,19 +146,48 @@ namespace GUBSTests
 
 		}
 
+		TEST_METHOD(CatalogLookup)
+		{
+			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
+
+			//	1 litre of diesel fuel
+			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
+				 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
+			supplyDef.set_key(catalog->EnsureSupplyDefinition(supplyDef));
+
+			//	1 litre of oil
+			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL - 10w40", "Engine oil, multi-weight",
+				 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
+			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyOilDef));
+			//	1 litre of oil
+			Supply_Lubrication supplyOilDef2(0, "LUBRICATING OIL - 10w30", "Engine oil, multi-weight",
+				 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
+			supplyOilDef2.set_key(catalog->EnsureSupplyDefinition(supplyOilDef2));
+
+			Assert::IsTrue(supplyDef.get_key() == catalog->GetSupplyDef(supplyDef).get_key());
+			Assert::IsTrue(supplyOilDef.get_key() == catalog->GetSupplyDef(supplyOilDef).get_key());
+			
+			std::vector<const _Supply*> supplies = catalog->GetSupplyOfType(SupplyType::POWER);
+			Assert::IsTrue(supplies.size() == 1);
+			Assert::IsTrue(supplyDef.get_key() == supplies[0]->get_key() );
+			supplies = catalog->GetSupplyOfType(SupplyType::LUBRICATION);
+			Assert::IsTrue(supplies.size() == 2);
+			Assert::IsTrue(supplyOilDef.get_key() == supplies[0]->get_key());
+		}
+
 		TEST_METHOD(AddUnitSupply)
 		{
 			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
 
 			//	1 litre of diesel fuel
-			_Supply supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplyType::POWER, SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
-			supplyDef.set_key(catalog->AddOrUpdateSupplyDefinition(supplyDef));
+			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
+				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
+			supplyDef.set_key(catalog->EnsureSupplyDefinition(supplyDef));
 
 			//	1 litre of oil
-			_Supply supplyOilDef(0, "LUBRICATING OIL", "Engine oil",
-				SupplyType::OTHER, SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
-			supplyOilDef.set_key(catalog->AddOrUpdateSupplyDefinition(supplyDef));
+			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL", "Engine oil",
+				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
+			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyDef));
 
 			UnitSupplyElement supply = CreateFuelSupp(supplyDef);
 			UnitSupplyElement oilSupply = CreateOilSupp(supplyOilDef);
@@ -162,45 +195,15 @@ namespace GUBSTests
 		}
 
 
-		TEST_METHOD(CatalogLookup)
-		{
-			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
-
-			//	1 litre of diesel fuel
-			_Supply supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplyType::POWER, SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
-			supplyDef.set_key(catalog->AddOrUpdateSupplyDefinition(supplyDef));
-
-			//	1 litre of oil
-			_Supply supplyOilDef(0, "LUBRICATING OIL", "Engine oil - 10w40",
-				SupplyType::OTHER, SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
-			supplyOilDef.set_key(catalog->AddOrUpdateSupplyDefinition(supplyOilDef));
-			//	1 litre of oil
-			_Supply supplyOilDef2(0, "LUBRICATING OIL", "Engine oil - 10w30",
-				SupplyType::OTHER, SupplySubType::LIQUID, MeasurementUnit::LITER, 0.43f, Volume(.1f, .1f, .1f));
-			supplyOilDef2.set_key(catalog->AddOrUpdateSupplyDefinition(supplyOilDef2));
-
-			Assert::IsTrue(supplyDef.get_key() == catalog->GetSupplyDef(supplyDef).get_key());
-			Assert::IsTrue(supplyOilDef.get_key() == catalog->GetSupplyDef(supplyOilDef).get_key());
-			
-			std::vector<const _Supply*> supplies = catalog->GetSupplyOfType(std::string("DIESEL"), SupplyType::POWER, SupplySubType::LIQUID);
-			Assert::IsTrue(supplies.size() == 1);
-			Assert::IsTrue(supplyDef.get_key() == supplies[0]->get_key() );
-			supplies = catalog->GetSupplyOfType(std::string("LUBRICATING OIL"), SupplyType::OTHER, SupplySubType::LIQUID);
-			Assert::IsTrue(supplies.size() == 2);
-			Assert::IsTrue(supplyOilDef.get_key() == supplies[0]->get_key());
-		}
-
-		UnitSupplyElement CreateFuelSupp(_Supply supplyDef)
+		UnitSupplyElement CreateFuelSupp(const _Supply& supplyDef)
 		{
 			UnitSupplyElement unitSupply(supplyDef);
 
 			//	1 litre supply quantity
-			//	Requirement container of 1000 litre
-			//	Require 1 container of 1000 litres to be considered fully supplied
-			//	1 litre supply quantity
+			//	Requirement container of 1000 x 1 litre supply quantity (1000 litre)
 			//	Consume 1/10000 of a litre per meter
-			unitSupply.CreateRequirement(1.0f, SupplyContainerType::RIGID, 1000.0f);
+			//	Consume 1/100000 of a litre per second
+			unitSupply.IntializeRequirementContainer(1.0f, SupplyContainerType::RIGID, 1000.0f);
 			unitSupply.AddConsumption(1.0f, MeasurementUnit::METER, 0.0001f);
 			unitSupply.AddConsumption(1.0f, MeasurementUnit::SECOND, 0.000001f);
 			SetDieselFuelRequirements(unitSupply);
@@ -208,17 +211,16 @@ namespace GUBSTests
 			return unitSupply;
 		}
 
-		UnitSupplyElement CreateOilSupp(_Supply supplyDef)
+		UnitSupplyElement CreateOilSupp(const _Supply& supplyDef)
 		{
 			UnitSupplyElement unitSupply(supplyDef);
 
 			//	1 litre supply quantity
-			//	Requirement container of 10 litre
-			//	Require 1 container of 10 litres to be considered fully supplied
-			//	1 litre supply quantity
-			//	Consume 1/10000 of a litre per meter
-			unitSupply.CreateRequirement(1.0f, SupplyContainerType::RIGID, 10.0f);
-			unitSupply.AddConsumption(1.0f, MeasurementUnit::METER, 0.0001f);
+			//	Requirement container of 10 x 1 litre supply quantity (10 litre)
+			//	Consume 1/100000 of a litre per meter
+			//	Consume 1/1000000 of a litre per second
+			unitSupply.IntializeRequirementContainer(1.0f, SupplyContainerType::RIGID, 10.0f);
+			unitSupply.AddConsumption(1.0f, MeasurementUnit::METER, 0.00001f);
 			unitSupply.AddConsumption(1.0f, MeasurementUnit::SECOND, 0.000001f);
 			SetLubOilRequirements(unitSupply);
 

@@ -8,9 +8,9 @@ namespace GUBS_Supply
 	{
 	public:
 
-		float _MovementDetractor;
-		float _AttackDetractor;
-		float _DefenseDetractor;
+		float _Movement;
+		float _Attack;
+		float _Defense;
 
 
 		ActionDetractor(float moveDetractor, float attDetractor, float defDetractor);

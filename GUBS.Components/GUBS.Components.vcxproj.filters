@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Infrastructure">
       <UniqueIdentifier>{cd721e93-4ff1-43f6-ad15-e7d618051f07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Supply\SupplyTypes">
+      <UniqueIdentifier>{fe1e78e4-0f00-4a03-80e4-f399cf05c222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Supply\SupplyTypes">
+      <UniqueIdentifier>{bbdc8b5c-b010-429d-a3d5-c03e9ff47b39}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -36,46 +42,55 @@
     <ClInclude Include="GUBS.Interfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="enums.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ActionDetractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyConsumer.h">
+    <ClInclude Include="Supply\SupplyConsumer.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyConsumption.h">
+    <ClInclude Include="Supply\SupplyConsumption.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyContainer.h">
+    <ClInclude Include="Supply\SupplyContainer.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyDefinitionCatalog.h">
+    <ClInclude Include="Supply\SupplyDefinitionCatalog.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyLevelDefinition.h">
+    <ClInclude Include="Supply\SupplyLevelDefinition.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyRequirement.h">
+    <ClInclude Include="Supply\SupplyQuantity.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="Volume.h">
+    <ClInclude Include="Supply\SupplyRequirement.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="infrastructure.h">
+    <ClInclude Include="SupportClasses\Volume.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupportClasses\enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\UnitSupply.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\UnitSupplyElement.h">
+      <Filter>Header Files\Supply</Filter>
+    </ClInclude>
+    <ClInclude Include="SupportClasses\infrastructure.h">
       <Filter>Header Files\Infrastructure</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyQuantity.h">
+    <ClInclude Include="Supply\SupplyTypes\Supply_Ammunition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyTypes\Supply_Power.h">
+      <Filter>Header Files\Supply\SupplyTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyTypes\Supply.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
-    <ClInclude Include="Supply.h">
-      <Filter>Header Files\Supply</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitSupplyElement.h">
-      <Filter>Header Files\Supply</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitSupply.h">
+    <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -92,37 +107,46 @@
     <ClCompile Include="ActionDetractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyConsumer.cpp">
+    <ClCompile Include="SupportClasses\Volume.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyConsumption.cpp">
+    <ClCompile Include="Supply\Source\SupplyConsumer.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyContainer.cpp">
+    <ClCompile Include="Supply\Source\SupplyConsumption.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyDefinitionCatalog.cpp">
+    <ClCompile Include="Supply\Source\SupplyContainer.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyLevelDefinition.cpp">
+    <ClCompile Include="Supply\Source\SupplyDefinitionCatalog.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyRequirement.cpp">
+    <ClCompile Include="Supply\Source\SupplyLevelDefinition.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="Volume.cpp">
+    <ClCompile Include="Supply\Source\SupplyQuantity.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="SupplyQuantity.cpp">
+    <ClCompile Include="Supply\Source\SupplyRequirement.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="Supply.cpp">
+    <ClCompile Include="Supply\Source\UnitSupplyElement.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="UnitSupplyElement.cpp">
+    <ClCompile Include="Supply\Source\UnitSupply.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Ammunition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Power.cpp">
+      <Filter>Source Files\Supply\SupplyTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="UnitSupply.cpp">
+    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Lubrication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
