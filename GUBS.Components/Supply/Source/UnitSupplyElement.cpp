@@ -11,44 +11,44 @@
 namespace GUBS_Supply
 {
 
-	void UnitSupplyElement::Consume(float consumptionDriverAmount, MeasurementUnit consumptionDriver)
+	UnitizedValue UnitSupplyElement::Consume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
 	{
-		for (auto itor = _Consumption.begin(); itor != _Consumption.end(); ++itor)
-		{
-			if (itor->second->HasUnitsOf(consumptionDriver))
-			{
-				float consumption = itor->second->ConsumptionAmount(consumptionDriverAmount);
-				if (!itor->second->TryDeplete(consumption))
-				{
-					float required = itor->second->ForceDeplete(consumption);
-					//signalConsumptionFailed(itor->second->FullHash(), required);
-				}
-			}
-		}
+		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
+		float requiredAmount = _SupplyQuantity.ForceDeplete(consumption.Value);
+		return UnitizedValue(_SupplyQuantity.SupplyUnits(), requiredAmount);
 	}
 
-	void UnitSupplyElement::AddConsumption(float consumptionQuantity, MeasurementUnit consumptionUnit, float consumptionRate)
+	bool UnitSupplyElement::TryConsume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
 	{
-		SupplyQuantity supplyQuantity(*static_cast<SupplyQuantity*>(this), consumptionQuantity);
-		SupplyConsumption *consumption = new SupplyConsumption(supplyQuantity, consumptionUnit, consumptionQuantity);
-		SetOrAddConsumption(consumption);
+		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
+		return _SupplyQuantity.TryDeplete(consumption.Value);
 	}
-	
+
+	UnitizedValue UnitSupplyElement::CalculateConsumption(const std::vector<UnitizedValue>&  consumptionDriverAmounts) const
+	{
+		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
+		return consumption;
+	}
+
+	void UnitSupplyElement::AddConsumption(MeasurementUnit consumptionUnit, float consumptionRate, float consumptionExponent)
+	{
+		_Consumption.AddConsumption(consumptionUnit, consumptionRate, consumptionExponent);
+	}
+
+	void UnitSupplyElement::AddSupplyContainers(float containers)
+	{
+		_SupplyQuantity.Add(containers * this->_InnerCount);
+	}
+
+	float UnitSupplyElement::AvailableQuantity() const
+	{
+		return _SupplyQuantity.Quantity()	;
+	}
+
 	unsigned long UnitSupplyElement::hash() const
 	{
-		return static_cast<const SupplyQuantity*>(this)->get_key();
+		return get_key();
 	}
-
-	void UnitSupplyElement::SetOrAddConsumption( SupplyConsumption* consumption)
-	{
-		auto itor = _Consumption.find(consumption->hash());
-		if ( itor != _Consumption.end())
-		{
-			itor->second.release();
-		}
-		_Consumption[consumption->hash()].reset(consumption);
-	}
-
 
 }
 
@@ -57,3 +57,6 @@ unsigned long std::hash<GUBS_Supply::UnitSupplyElement>::operator()(const GUBS_S
 {
 	return inDef.hash();
 }
+
+
+

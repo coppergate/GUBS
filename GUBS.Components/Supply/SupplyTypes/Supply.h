@@ -26,24 +26,23 @@ namespace GUBS_Supply
 		std::string _Description;
 
 		_Supply();
-
-		_Supply(const _Supply& def);
-		_Supply(_Supply&& def) = default;
-
 		_Supply(unsigned long key, const _Supply& def);
-
 		_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, float massPer, const Volume& volumePer);
 
 	public:
 
+
+		_Supply(const _Supply& def);
+		_Supply(_Supply&& def) = default;
+		
 		static const _Supply EmptySupply;
-
-
+		
 		virtual ~_Supply()
 		{
 		}
 
-		bool HasUnitsOf(MeasurementUnit unit) { return _Units == unit; }
+		bool HasUnitsOf(MeasurementUnit unit) const { return _Units == unit; }
+		MeasurementUnit SupplyUnits() const { return _Units; }
 
 		unsigned long get_key() const { return _Id; }
 		void set_key(unsigned long key) { _Id = key; }

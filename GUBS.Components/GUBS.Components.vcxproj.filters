@@ -93,6 +93,12 @@
     <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Supply\ConsumptionDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SupportClasses\UnitizedValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

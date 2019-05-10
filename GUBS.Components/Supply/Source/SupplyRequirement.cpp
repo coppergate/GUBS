@@ -14,6 +14,7 @@ namespace GUBS_Supply
 		: SupplyContainer(supplyDef),
 		_SupplyLevels(std::make_unique<SupplyLevelList>(get_supplyLevels((size_t)SupplyLevel::SUPPLY_LEVELS)))
 	{
+		DBUG("SupplyRequirement");
 	}
 
 	SupplyRequirement::SupplyRequirement(const SupplyRequirement & supplyRequirement)
@@ -21,9 +22,10 @@ namespace GUBS_Supply
 		_UnsuppliedOutcome(supplyRequirement._UnsuppliedOutcome), _IntervalBeforeUnsuppliedOutcome(supplyRequirement._IntervalBeforeUnsuppliedOutcome),
 		_UnsuppliedOutcomeIntervalUnits(supplyRequirement._UnsuppliedOutcomeIntervalUnits)
 	{
+		DBUG("SupplyRequirement");
 		SupplyLevelList* list = _SupplyLevels.get();
 
-		for (auto itor = (supplyRequirement._SupplyLevels.get())->begin(); itor != (supplyRequirement._SupplyLevels.get())->end(); ++itor)
+		for (auto itor = (supplyRequirement._SupplyLevels)->begin(); itor != (supplyRequirement._SupplyLevels)->end(); ++itor)
 		{
 			list->at((size_t)itor->get()->GetSupplyLevel()).reset(new SupplyLevelDefinition(*itor->get()));
 		}
@@ -33,6 +35,7 @@ namespace GUBS_Supply
 		: SupplyContainer(supplyContainer),
 		_SupplyLevels(std::make_unique<SupplyLevelList>(get_supplyLevels((size_t)SupplyLevel::SUPPLY_LEVELS)))
 	{
+		DBUG("SupplyRequirement");
 	}
 
 	void SupplyRequirement::SetSupplyLevel(SupplyLevel lvl, float reqSup, float moveDetractor, float attDetractor, float defDetractor)
@@ -72,7 +75,7 @@ namespace GUBS_Supply
 	{	
 		_Quantity = supplyUnitQuantity;
 		_ContainerType = containerType;
-		_ContainerQuantity = containerQuantity;
+		_InnerCount = containerQuantity;
 	}
 
 	unsigned long SupplyRequirement::hash() const

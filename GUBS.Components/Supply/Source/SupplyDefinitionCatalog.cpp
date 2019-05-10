@@ -14,8 +14,7 @@ namespace GUBS_Supply
 	{
 		LOGOG_DEBUG("~SupplyDefinitionCatalog()");
 	}
-
-
+	
 	const _Supply& SupplyDefinitionCatalog::GetSupplyDef(unsigned long id)
 	{
 		LOGOG_DEBUG("GetSupplyDef - (%lu)", id);
@@ -39,7 +38,7 @@ namespace GUBS_Supply
 			auto keyRange = _SupplyTypeLookup.equal_range(def->get_type());
 			for (auto keyedSupply = keyRange.first; keyedSupply != keyRange.second; ++keyedSupply)
 			{
-				if (keyedSupply->second->second->fullHash() == def->fullHash()) {
+				if (keyedSupply->second->fullHash() == def->fullHash()) {
 					_SupplyTypeLookup.erase(keyedSupply);
 					break;
 				}
@@ -55,7 +54,7 @@ namespace GUBS_Supply
 		auto itor = _FullHashLookup.find(supplyAsKey.fullHash());
 		if (itor != _FullHashLookup.end())
 		{
-			return *(itor->second->second);
+			return *(itor->second);
 		}
 		return _Supply::EmptySupply;
 	}
@@ -66,7 +65,7 @@ namespace GUBS_Supply
 		auto keyRange = _SupplyTypeLookup.equal_range(type);
 		for (auto itor = keyRange.first; itor != keyRange.second; ++itor)
 		{
-			retVal.push_back(itor->second->second.get());
+			retVal.push_back(itor->second);
 		}
 		return retVal;
 	}

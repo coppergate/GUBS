@@ -14,9 +14,8 @@ namespace GUBS_Supply
 	typedef std::map< unsigned long, std::unique_ptr<_Supply> > SupplyLookup;
 	typedef std::iterator<std::random_access_iterator_tag, SupplyLookup::iterator> SupplyEntryIterator;
 
-
-	typedef std::map< unsigned long, const std::map< unsigned long, std::unique_ptr<_Supply> >::iterator > CrossReferenceLookup;
-	typedef std::multimap< SupplyType, const std::map< unsigned long, std::unique_ptr<_Supply> >::iterator  > MultiCrossReferenceLookup;
+	typedef std::map< unsigned long, const _Supply*> CrossReferenceLookup;
+	typedef std::multimap< SupplyType, const _Supply*> MultiCrossReferenceLookup;
 
 	class SupplyDefinitionCatalog
 	{
@@ -54,7 +53,7 @@ namespace GUBS_Supply
 
 		if (hashReference != _FullHashLookup.end())
 		{
-			return hashReference->second->second->get_key();
+			return hashReference->second->get_key();
 		}
 
 		key = _NextKey++;
@@ -63,8 +62,8 @@ namespace GUBS_Supply
 		auto inserted = _DefinedSupplies.emplace(std::make_pair(key, std::make_unique<T>(key, supply)));
 
 		auto ptr = inserted.first;
-		_FullHashLookup.emplace(std::make_pair(supply.fullHash(), ptr));
-		_SupplyTypeLookup.emplace(std::make_pair(supply.get_type(), ptr));
+		_FullHashLookup.emplace(std::make_pair(supply.fullHash(), ptr->second.get()));
+		_SupplyTypeLookup.emplace(std::make_pair(supply.get_type(), ptr->second.get()));
 		return key;
 	}
 

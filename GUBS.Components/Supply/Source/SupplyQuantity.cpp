@@ -6,10 +6,12 @@ namespace GUBS_Supply
 {
 	SupplyQuantity::SupplyQuantity() : _Supply(), _Quantity(0.0f)
 	{
+		DBUG("SupplyQuantity");
 	}
 
 	SupplyQuantity::SupplyQuantity(const _Supply& supplyDef, float quantity) : _Supply(supplyDef), _Quantity(quantity)
 	{
+		DBUG("SupplyQuantity");
 	}
 
 	void SupplyQuantity::Add(float quantity)

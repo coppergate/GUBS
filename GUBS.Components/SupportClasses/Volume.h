@@ -15,12 +15,18 @@ namespace GUBS_Supply
 
 	public:
 
-		Volume();
+		Volume() : Volume(0, 0, 0) {}
 
-		Volume(float h, float w, float l);
+		Volume(float h, float w, float l) : _Height(h), _Width(w), _Length(l)
+		{
 
-		Volume(const Volume& vol);
+		}
 
-		operator float() const;
+		Volume(const Volume& vol) = default;
+
+		operator float() const
+		{
+			return _Height * _Width * _Length;
+		}
 	};
 }

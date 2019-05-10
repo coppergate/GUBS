@@ -27,6 +27,7 @@ namespace GUBS_Supply
 		float Quantity() const { return _Quantity; }
 
 		const _Supply& GetSupplyDef() const { return *this; }
+		bool IsDepleted() const { return _Quantity == 0; }
 
 		const SupplyQuantity& operator=(SupplyQuantity& rhs);
 	};

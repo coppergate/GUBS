@@ -170,6 +170,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ActionDetractor.h" />
+    <ClInclude Include="Supply\ConsumptionDefinition.h" />
     <ClInclude Include="Supply\SupplyTypes\Supply_Ammunition.h" />
     <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h" />
     <ClInclude Include="SupportClasses\enums.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Supply\UnitSupply.h" />
     <ClInclude Include="Supply\UnitSupplyElement.h" />
     <ClInclude Include="SupportClasses\Volume.h" />
+    <ClInclude Include="SupportClasses\UnitizedValue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionDetractor.cpp" />

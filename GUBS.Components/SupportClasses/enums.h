@@ -33,9 +33,14 @@ namespace GUBS_Supply
 		METER = 1,
 		KILOGRAM,
 		LITER,
-		SECOND,
-		EACH,
 		AMPERE,
+		EACH,
+		SECOND,
+		METER_PER_SECOND,
+		KILOGRAM_PER_SECOND,
+		LITER_PER_SECOND, 
+		AMPERE_PER_SECOND,
+		EACH_PER_SECOND,
 	};
 
 	enum class SupplyLevel : unsigned char

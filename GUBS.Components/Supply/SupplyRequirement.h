@@ -26,6 +26,9 @@ namespace GUBS_Supply
 
 		SupplyRequirement(const SupplyContainer& supplyContainer);
 
+		SupplyRequirement(SupplyRequirement&& supplyContainer) = default;
+
+
 		virtual ~SupplyRequirement() {}
 
 		void SetSupplyLevel(SupplyLevel lvl, float reqSup, float moveDetractor, float attDetractor, float defDetractor);

@@ -12,3 +12,4 @@ std::size_t std::hash<GUBS_Supply::SupplyConsumption>::operator()(const GUBS_Sup
 {
 	return inDef.hash();
 }
+

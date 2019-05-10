@@ -64,7 +64,7 @@ namespace GUBS_Supply
 		std::hash<float> floatHash;
 		EnumClassHash enumHash;
 
-		unsigned long ret = typeHash() << 32 
+		unsigned long ret = typeHash() << 24 
 			^ enumHash(_SubType) << 12
 			^ enumHash(_Units) << 8
 			^ floatHash(_MassPerUnit) << 4

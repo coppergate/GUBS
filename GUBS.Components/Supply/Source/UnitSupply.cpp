@@ -6,8 +6,9 @@ namespace GUBS_Supply
 {
 
 
-	UnitSupply::UnitSupply()
+	UnitSupply::UnitSupply() : UnitSupplyLookup()
 	{
+		DBUG("UnitSupply");
 	}
 
 
@@ -15,44 +16,57 @@ namespace GUBS_Supply
 	{
 	}
 
-	void UnitSupply::Consume(SupplyType type, float consumptionDriverAmount, MeasurementUnit consumptionDriverUnit)
+	void UnitSupply::Consume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
 	{
-		for (auto itor = begin(); itor != end(); ++itor)
+		for (auto& itor : *this)
 		{
-			auto supply = itor->second.get();
-			if (supply->isSupplyOfType(type))
-			{
-				supply->Consume(consumptionDriverAmount, consumptionDriverUnit);
-			}
+			auto supply = itor.second.get();
+			float consumption = supply->Consume(consumptionDriverAmounts);
+			
 		}
 	}
 
-	void UnitSupply::Consume(const _Supply& supplyKey, float consumptionDriverAmount, MeasurementUnit consumptionDriverUnit)
+	void UnitSupply::AddSupplyElement(const UnitSupplyElement& supplyElement)
 	{
-		for (auto itor = begin(); itor != end(); ++itor)
+		auto itor = this->find(supplyElement.hash());
+		if (itor == end())
 		{
-			auto supply = itor->second.get();
-			if (supply->fullHash() == supplyKey.fullHash())
-			{
-				supply->Consume(consumptionDriverAmount, consumptionDriverUnit);
-				break;
-			}
+			emplace(std::make_pair(supplyElement.hash(), std::make_unique<UnitSupplyElement>(supplyElement)));
 		}
-
 	}
 
-	void UnitSupply::AddSupply(const SupplyQuantity supplyQuantity)
+	void UnitSupply::AddSupplyElement(UnitSupplyElement* supplyQuantity)
 	{
-		for (auto itor = begin(); itor != end(); ++itor)
+		auto itor = this->find(supplyQuantity->hash());
+		if (itor == end())
 		{
-			auto supply = itor->second.get();
-			if (supply->fullHash() == supplyQuantity.fullHash())
-			{
-				supply->Add(supplyQuantity.Quantity());
-				break;
-			}
+		
+			emplace(std::make_pair(supplyQuantity->hash(), std::unique_ptr<UnitSupplyElement>(supplyQuantity)));
 		}
-
 	}
+
+	bool UnitSupply::IsDepleted(SupplyType type)
+	{
+		auto element = GetSupplyElement(type);
+		if (element != nullptr)
+		{
+			return element->IsDepleted();
+		}
+		return true;
+	}
+
+	const UnitSupplyElement* UnitSupply::GetSupplyElement(SupplyType type)
+	{
+		for (auto itor = cbegin(); itor != cend(); itor++)
+		{
+			UnitSupplyElement* elem = itor->second.get();
+			if (elem->SupplyType() == type)
+			{
+				return elem;
+			}	
+		}
+		return nullptr;
+	}
+
 
 }
