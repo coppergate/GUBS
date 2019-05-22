@@ -12,6 +12,8 @@ namespace GUBS_Supply
 		~UnitSupply();
 
 		void Consume(const std::vector<UnitizedValue>&  consumptionDriverAmounts);
+		std::vector<UnitizedValue> CalculateScope(const std::vector<SupplyQuantity>& scopeQuestion) const;
+		std::vector<UnitizedValue> CurrentScope() const;
 
 		void AddSupplyElement(const UnitSupplyElement& supplyQuantity);
 		void AddSupplyElement(UnitSupplyElement* supplyQuantity);

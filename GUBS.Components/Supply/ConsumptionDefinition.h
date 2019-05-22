@@ -36,6 +36,10 @@ namespace GUBS_Supply
 
 		}
 
+		//	given an amount of the consumption driver this calculates how much of the
+		//	defined quantity would be consumed.
+		//	_PerUnit is METER then the  
+		//			consumption = rate * (driver amount (in meters))
 		float CalculateConsumption(const UnitizedValue consumptionDriverAmount) const
 		{
 			if (consumptionDriverAmount.Unit == _PerUnit)
@@ -48,6 +52,12 @@ namespace GUBS_Supply
 			}
 		}
 
+		//	Provided a quantity of the consumable this calculates how much of the 'driver amount'  
+		//	would be required
+		UnitizedValue CalculateSupplyScope(const SupplyQuantity& quantity) const
+		{
+			return UnitizedValue(_PerUnit, std::powf( quantity.Quantity() / _Rate, 1.0 / _Exponent));
+		}
 	};
 
 

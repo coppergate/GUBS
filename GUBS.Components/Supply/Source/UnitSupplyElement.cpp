@@ -30,6 +30,16 @@ namespace GUBS_Supply
 		return consumption;
 	}
 
+	std::vector<UnitizedValue>  UnitSupplyElement::CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const
+	{
+		return _Consumption.CalculateSupplyScope(consumption);
+	}
+
+	SupplyQuantity UnitSupplyElement::CurrentAvailableSupply() const
+	{
+		return _SupplyQuantity;
+	}
+
 	void UnitSupplyElement::AddConsumption(MeasurementUnit consumptionUnit, float consumptionRate, float consumptionExponent)
 	{
 		_Consumption.AddConsumption(consumptionUnit, consumptionRate, consumptionExponent);

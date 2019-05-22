@@ -79,6 +79,23 @@ namespace GUBS_Supply
 			return  retVal;
 		}
 
+		std::vector<UnitizedValue> CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const
+		{
+			std::vector<UnitizedValue> retVal;
+			for_each(consumption.cbegin(), consumption.cend(), [&](const SupplyQuantity value) {
+				if (value.get_key() == get_key())
+				{
+					for (auto itor = _ConsumptionDefinitions->cbegin(); itor != _ConsumptionDefinitions->cend(); ++itor)
+					{
+						ConsumptionDefinition* def = itor->get();
+						retVal.push_back(def->CalculateSupplyScope(value));
+					}
+				}
+			});
+
+			return  retVal;
+		}
+
 		const std::size_t hash() const
 		{
 			return (((std::size_t) _ConsumptionUnit) << 4) ^ (std::size_t)_Type;

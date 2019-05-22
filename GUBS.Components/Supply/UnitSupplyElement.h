@@ -47,8 +47,12 @@ namespace GUBS_Supply
 		//	supply returns false and does not consume any supply
 		bool TryConsume(const std::vector<UnitizedValue>&  consumptionDriverAmounts);
 
-		//	returns the required supply amount required for the input driver amounts.
+		//	returns the supply amount required for the input driver amounts.
 		UnitizedValue CalculateConsumption(const std::vector<UnitizedValue>&  consumptionDriverAmounts) const;
+
+		std::vector<UnitizedValue> CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const;
+
+		SupplyQuantity CurrentAvailableSupply() const;
 
 		void AddConsumption(MeasurementUnit consumptionUnit, float consumptionRate, float consumptionExponent);
 

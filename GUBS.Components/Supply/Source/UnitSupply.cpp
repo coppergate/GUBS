@@ -21,10 +21,35 @@ namespace GUBS_Supply
 		for (auto& itor : *this)
 		{
 			auto supply = itor.second.get();
-			float consumption = supply->Consume(consumptionDriverAmounts);
-			
+			UnitizedValue consumption = supply->Consume(consumptionDriverAmounts);			
 		}
 	}
+
+	std::vector<UnitizedValue>  UnitSupply::CalculateScope(const std::vector<SupplyQuantity>& scopeQuestion) const
+	{
+		std::vector<UnitizedValue> scopeAnswer;
+		for (auto& itor : *this)
+		{
+			auto supply = itor.second.get();
+			auto supplyAnswer = supply->CalculateSupplyScope(scopeQuestion);
+			scopeAnswer.insert(scopeAnswer.end(), supplyAnswer.cbegin(), supplyAnswer.cend());
+		}
+		return scopeAnswer;
+	}
+
+	std::vector<UnitizedValue> UnitSupply::CurrentScope() const
+	{
+		std::vector<SupplyQuantity> scopeQuestion;
+
+		for (auto& itor : *this)
+		{
+			auto supply = itor.second.get();
+			auto supplyAvailable = supply->CurrentAvailableSupply();
+			scopeQuestion.push_back(supplyAvailable);
+		}
+		return CalculateScope(scopeQuestion);
+	}
+
 
 	void UnitSupply::AddSupplyElement(const UnitSupplyElement& supplyElement)
 	{
@@ -39,8 +64,7 @@ namespace GUBS_Supply
 	{
 		auto itor = this->find(supplyQuantity->hash());
 		if (itor == end())
-		{
-		
+		{		
 			emplace(std::make_pair(supplyQuantity->hash(), std::unique_ptr<UnitSupplyElement>(supplyQuantity)));
 		}
 	}
