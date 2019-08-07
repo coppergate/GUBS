@@ -5,7 +5,7 @@
 namespace GUBS_Supply
 {
 
-	void SupplyConsumer::ConsumeSupplies(MeasurementUnit supplyConsumptionType, float consumptionAmount)
+	void SupplyConsumer::ConsumeSupplies(MeasurementUnit supplyConsumptionType, double consumptionAmount)
 	{
 
 	}

@@ -61,22 +61,32 @@ namespace GUBS_Supply
 			delete  _ConsumptionDefinitions;
 		}
 
-		void AddConsumption(MeasurementUnit perRateUnit, float rate, float exponent)
+		void AddConsumption(MeasurementUnit perRateUnit, double rate, double exponent)
 		{
 			_ConsumptionDefinitions->emplace_back(std::make_unique<ConsumptionDefinition>(perRateUnit, rate, exponent));
 		}
 
-		UnitizedValue CalculateConsumption(const std::vector<UnitizedValue>&  consumptionDriverAmounts) const
+		UnitizedValue CalculateConsumption(const std::vector<UnitizedValue>& consumptionDriverAmounts) const
 		{
 			UnitizedValue retVal(_ConsumptionUnit, 0);
-			for (auto itor = _ConsumptionDefinitions->cbegin(); itor != _ConsumptionDefinitions->cend(); ++itor)
+			for (auto consumptionDefinition = _ConsumptionDefinitions->cbegin(); consumptionDefinition != _ConsumptionDefinitions->cend(); ++consumptionDefinition)
 			{
-				ConsumptionDefinition* def = itor->get();
+				ConsumptionDefinition* def = consumptionDefinition->get();
 				for_each(consumptionDriverAmounts.cbegin(), consumptionDriverAmounts.cend(), [&](const UnitizedValue value) {
 					retVal.Value += def->CalculateConsumption(value);
-				});
+					});
 			}
 			return  retVal;
+		}
+
+		UnitizedValue CalculateConsumption(const std::vector<SupplyQuantity>&  consumptionDriverAmounts) const
+		{
+			std::vector<UnitizedValue> value;
+			for (auto& quantity : consumptionDriverAmounts)
+			{
+				value.emplace_back(UnitizedValue(quantity.SupplyUnits(), quantity.Quantity()));
+			}
+			return CalculateConsumption(value);
 		}
 
 		std::vector<UnitizedValue> CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const

@@ -9,22 +9,22 @@ namespace GUBS_Supply
 	{
 		//	All linear measurements are in METERS
 
-		float _Height;
-		float _Width;
-		float _Length;
+		double _Height;
+		double _Width;
+		double _Length;
 
 	public:
 
 		Volume() : Volume(0, 0, 0) {}
 
-		Volume(float h, float w, float l) : _Height(h), _Width(w), _Length(l)
+		Volume(double h, double w, double l) : _Height(h), _Width(w), _Length(l)
 		{
 
 		}
 
 		Volume(const Volume& vol) = default;
 
-		operator float() const
+		operator double() const
 		{
 			return _Height * _Width * _Length;
 		}

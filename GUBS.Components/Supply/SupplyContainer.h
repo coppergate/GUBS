@@ -15,7 +15,7 @@ namespace GUBS_Supply
 	{
 	protected:
 		SupplyContainerType _ContainerType;
-		float _InnerCount;
+		double _InnerCount;
 
 		unique_ptr<SupplyContainer> _InnerContainer;
 
@@ -26,62 +26,62 @@ namespace GUBS_Supply
 		SupplyContainer(const _Supply& supplyDef);
 		SupplyContainer(const SupplyContainer& container);
 
-		SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, float containerQuantity);
-		SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, float containerQuantity, const SupplyContainer& innerContainer);
+		SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, double containerQuantity);
+		SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, double containerQuantity, const SupplyContainer& innerContainer);
 
 		virtual ~SupplyContainer() {}
 
 		SupplyContainerType getContainerType() const { return _ContainerType; }
-		float getContainerQuantity() const
+		double getContainerQuantity() const
 		{
 			return getInnerContainerCount() * _Quantity;
 		}
 
-		float getInnerContainerCount() const
+		double getInnerContainerCount() const
 		{
-			float innerCount = 1.0;
+			double innerCount = 1.0;
 			if (_InnerContainer)
 				innerCount = _InnerContainer->getInnerContainerCount();
 			return innerCount * _InnerCount;
 		}
 
-		void Add(float quantity)
+		void Add(double quantity)
 		{
 			SupplyQuantity::Add(quantity);
 		}
 
-		float Quantity() const { return _Quantity; }
+		double Quantity() const { return _Quantity; }
 		const _Supply& GetSupplyDef() const { return *this; }
 		bool IsDepleted() const { return _Quantity == 0; }
 
-		bool TryDeplete(float quantity)
+		bool TryDeplete(double quantity)
 		{
-			float containerQuantity = getTopLevelContainerQuantityFromSupplyQuantity(quantity);
+			double containerQuantity = getTopLevelContainerQuantityFromSupplyQuantity(quantity);
 			return  SupplyQuantity::TryDeplete(containerQuantity);
 		}
 
-		float ForceDeplete(float quantity)
+		double ForceDeplete(double quantity)
 		{
-			float containerQuantity = getTopLevelContainerQuantityFromSupplyQuantity(quantity);
+			double containerQuantity = getTopLevelContainerQuantityFromSupplyQuantity(quantity);
 			return getInnerContainerQuantity() * _InnerCount * SupplyQuantity::ForceDeplete(containerQuantity);
 		}
 
 	protected:
-		float getInnerContainerQuantity() const
+		double getInnerContainerQuantity() const
 		{
-			float innerContainerCount = 1.0f;
+			double innerContainerCount = 1.0f;
 			if (_InnerContainer)
 				innerContainerCount = _InnerCount * _InnerContainer->getInnerContainerQuantity();
 			return innerContainerCount;
 		}
 
-		float getTopLevelContainerQuantityFromSupplyQuantity(float supplyQuantity)
+		double getTopLevelContainerQuantityFromSupplyQuantity(double supplyQuantity)
 		{
 			if (supplyQuantity == 0)
 				return 0;
 
-			float innerContainerSupplyCount = getInnerContainerQuantity();
-			float innerContainerQuantityForSupply = supplyQuantity / (_InnerCount * innerContainerSupplyCount);
+			double innerContainerSupplyCount = getInnerContainerQuantity();
+			double innerContainerQuantityForSupply = supplyQuantity / (_InnerCount * innerContainerSupplyCount);
 			return innerContainerQuantityForSupply;
 		}
 

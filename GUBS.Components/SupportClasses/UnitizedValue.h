@@ -9,10 +9,10 @@ namespace GUBS_Supply
 	class UnitizedValue
 	{
 	public:
-		float Value;
+		double Value;
 		MeasurementUnit Unit;
 
-		UnitizedValue(MeasurementUnit unit, float value) : Value(value), Unit(unit)
+		UnitizedValue(MeasurementUnit unit, double value) : Value(value), Unit(unit)
 		{
 			DBUG("UnitizedValue - Unit(%d) , Value(%f)", unit, value);
 		}

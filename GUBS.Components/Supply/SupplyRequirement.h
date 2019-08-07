@@ -15,7 +15,7 @@ namespace GUBS_Supply
 		std::unique_ptr<SupplyLevelList> _SupplyLevels; 
 
 		UnsuppliedOutcome _UnsuppliedOutcome;
-		float _IntervalBeforeUnsuppliedOutcome;
+		double _IntervalBeforeUnsuppliedOutcome;
 		MeasurementUnit _UnsuppliedOutcomeIntervalUnits;
 
 	public:
@@ -31,16 +31,20 @@ namespace GUBS_Supply
 
 		virtual ~SupplyRequirement() {}
 
-		void SetSupplyLevel(SupplyLevel lvl, float reqSup, float moveDetractor, float attDetractor, float defDetractor);
+		void SetSupplyLevel(SupplyLevel lvl, double reqSup, double moveDetractor, double attDetractor, double defDetractor);
 		void SetSupplyLevel(const SupplyLevelDefinition& def);
 
-		void SetUnsuppliedOutcome(UnsuppliedOutcome outcome, float durationBeforeOutcome, MeasurementUnit outcomeIntervalUnits);
+		SupplyLevel DetermineSupplyLevel(double supplyQuantity) const;
+
+		void SetUnsuppliedOutcome(UnsuppliedOutcome outcome, double durationBeforeOutcome, MeasurementUnit outcomeIntervalUnits);
 
 		const SupplyLevelDefinition GetSupplyRequirement(SupplyLevel lvl);
 	
 		unsigned long hash() const;
 
-		void IntializeRequirementContainer(float supplyUnitQuantity, SupplyContainerType containerType, float containerQuantity);
+		void IntializeRequirementContainer(double supplyUnitQuantity, SupplyContainerType containerType, double containerQuantity);
+
+
 
 	protected:
 

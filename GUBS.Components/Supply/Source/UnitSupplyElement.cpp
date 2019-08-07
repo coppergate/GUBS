@@ -14,7 +14,7 @@ namespace GUBS_Supply
 	UnitizedValue UnitSupplyElement::Consume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
 	{
 		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
-		float requiredAmount = _SupplyQuantity.ForceDeplete(consumption.Value);
+		double requiredAmount = _SupplyQuantity.ForceDeplete(consumption.Value);
 		return UnitizedValue(_SupplyQuantity.SupplyUnits(), requiredAmount);
 	}
 
@@ -24,10 +24,16 @@ namespace GUBS_Supply
 		return _SupplyQuantity.TryDeplete(consumption.Value);
 	}
 
-	UnitizedValue UnitSupplyElement::CalculateConsumption(const std::vector<UnitizedValue>&  consumptionDriverAmounts) const
+	UnitizedValue UnitSupplyElement::CalculateConsumption(const std::vector<SupplyQuantity>&  consumptionDriverAmounts) const
 	{
 		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
 		return consumption;
+	}
+
+	SupplyLevel UnitSupplyElement::DetermineSupplyLevelFromDrivers(const std::vector<SupplyQuantity>& consumptionDriverAmounts) const
+	{
+		UnitizedValue consumption = CalculateConsumption(consumptionDriverAmounts);
+		return SupplyRequirement::DetermineSupplyLevel(consumption.Value);
 	}
 
 	std::vector<UnitizedValue>  UnitSupplyElement::CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const
@@ -40,17 +46,17 @@ namespace GUBS_Supply
 		return _SupplyQuantity;
 	}
 
-	void UnitSupplyElement::AddConsumption(MeasurementUnit consumptionUnit, float consumptionRate, float consumptionExponent)
+	void UnitSupplyElement::AddConsumption(MeasurementUnit consumptionUnit, double consumptionRate, double consumptionExponent)
 	{
 		_Consumption.AddConsumption(consumptionUnit, consumptionRate, consumptionExponent);
 	}
 
-	void UnitSupplyElement::AddSupplyContainers(float containers)
+	void UnitSupplyElement::AddSupplyContainers(double containers)
 	{
 		_SupplyQuantity.Add(containers * this->_InnerCount);
 	}
 
-	float UnitSupplyElement::AvailableQuantity() const
+	double UnitSupplyElement::AvailableQuantity() const
 	{
 		return _SupplyQuantity.Quantity()	;
 	}

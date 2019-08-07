@@ -15,8 +15,8 @@ namespace GUBS_Supply
 		//			and the consumption has units of whatever the SupplyConsumption that
 		//			owns this has.
 		MeasurementUnit _PerUnit;
-		float _Rate;
-		float _Exponent;
+		double _Rate;
+		double _Exponent;
 
 	public:
 
@@ -27,7 +27,7 @@ namespace GUBS_Supply
 		}
 
 
-		ConsumptionDefinition(MeasurementUnit perRateUnit, float rate, float exponent)
+		ConsumptionDefinition(MeasurementUnit perRateUnit, double rate, double exponent)
 			: _PerUnit(perRateUnit),
 			_Rate(rate),
 			_Exponent(exponent)
@@ -40,11 +40,11 @@ namespace GUBS_Supply
 		//	defined quantity would be consumed.
 		//	_PerUnit is METER then the  
 		//			consumption = rate * (driver amount (in meters))
-		float CalculateConsumption(const UnitizedValue consumptionDriverAmount) const
+		double CalculateConsumption(const UnitizedValue consumptionDriverAmount) const
 		{
 			if (consumptionDriverAmount.Unit == _PerUnit)
 			{
-				return  _Rate * std::powf(consumptionDriverAmount.Value, _Exponent);
+				return  _Rate * std::pow(consumptionDriverAmount.Value, _Exponent);
 			}
 			else
 			{
@@ -56,7 +56,7 @@ namespace GUBS_Supply
 		//	would be required
 		UnitizedValue CalculateSupplyScope(const SupplyQuantity& quantity) const
 		{
-			return UnitizedValue(_PerUnit, std::powf( quantity.Quantity() / _Rate, 1.0 / _Exponent));
+			return UnitizedValue(_PerUnit, std::pow( quantity.Quantity() / _Rate, 1.0 / _Exponent));
 		}
 	};
 

@@ -5,7 +5,7 @@
 namespace GUBS_Supply
 {
 
-	SupplyContainer::SupplyContainer() : SupplyQuantity()
+	SupplyContainer::SupplyContainer() : SupplyQuantity(), _ContainerType(SupplyContainerType::NONE), _InnerCount(0)
 	{
 		DBUG("SupplyContainer");
 	}
@@ -20,19 +20,20 @@ namespace GUBS_Supply
 	}
 
 
-	SupplyContainer::SupplyContainer(const _Supply& supplyDef) : SupplyQuantity(supplyDef, 0.0f)
+	SupplyContainer::SupplyContainer(const _Supply& supplyDef) 
+		: SupplyQuantity(supplyDef, 0.0f), _ContainerType(SupplyContainerType::NONE), _InnerCount(0)
 	{
 		DBUG("SupplyContainer");
 
 	}
 
-	SupplyContainer::SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, float containerQuantity)
+	SupplyContainer::SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, double containerQuantity)
 		: SupplyQuantity(supply), _ContainerType(containerType), _InnerCount(containerQuantity)
 	{
 		DBUG("SupplyContainer");
 	}
 
-	SupplyContainer::SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, float containerQuantity, const SupplyContainer& innerContainer)
+	SupplyContainer::SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, double containerQuantity, const SupplyContainer& innerContainer)
 		: SupplyQuantity(supply), _ContainerType(containerType), _InnerCount(containerQuantity)
 	{
 		DBUG("SupplyContainer");

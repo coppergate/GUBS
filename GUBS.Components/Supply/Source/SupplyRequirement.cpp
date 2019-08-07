@@ -17,7 +17,7 @@ namespace GUBS_Supply
 		DBUG("SupplyRequirement");
 	}
 
-	SupplyRequirement::SupplyRequirement(const SupplyRequirement & supplyRequirement)
+	SupplyRequirement::SupplyRequirement(const SupplyRequirement& supplyRequirement)
 		: SupplyContainer(supplyRequirement), _SupplyLevels(std::make_unique<SupplyLevelList>(get_supplyLevels((size_t)SupplyLevel::SUPPLY_LEVELS))),
 		_UnsuppliedOutcome(supplyRequirement._UnsuppliedOutcome), _IntervalBeforeUnsuppliedOutcome(supplyRequirement._IntervalBeforeUnsuppliedOutcome),
 		_UnsuppliedOutcomeIntervalUnits(supplyRequirement._UnsuppliedOutcomeIntervalUnits)
@@ -38,7 +38,7 @@ namespace GUBS_Supply
 		DBUG("SupplyRequirement");
 	}
 
-	void SupplyRequirement::SetSupplyLevel(SupplyLevel lvl, float reqSup, float moveDetractor, float attDetractor, float defDetractor)
+	void SupplyRequirement::SetSupplyLevel(SupplyLevel lvl, double reqSup, double moveDetractor, double attDetractor, double defDetractor)
 	{
 		SupplyLevelList* list = _SupplyLevels.get();
 		std::unique_ptr<SupplyLevelDefinition>& ptr = list->at((size_t)lvl);
@@ -52,7 +52,24 @@ namespace GUBS_Supply
 		ptr.reset(new SupplyLevelDefinition(def));
 	}
 
-	void SupplyRequirement::SetUnsuppliedOutcome(UnsuppliedOutcome outcome, float durationBeforeOutcome, MeasurementUnit outcomeIntervalUnits)
+	SupplyLevel SupplyRequirement::DetermineSupplyLevel(double supplyQuantity) const
+	{
+		SupplyLevelList* levels = _SupplyLevels.get();
+		SupplyLevel retLevel = SupplyLevel::NONE;
+
+		for (auto supDef = levels->begin(); supDef != levels->end(); ++supDef)
+		{
+			SupplyLevelDefinition* def = supDef->get();
+			if (def->Supplied(supplyQuantity)) 
+			{
+				retLevel = def->GetSupplyLevel();
+			}
+		}
+
+		return retLevel;
+	}
+
+	void SupplyRequirement::SetUnsuppliedOutcome(UnsuppliedOutcome outcome, double durationBeforeOutcome, MeasurementUnit outcomeIntervalUnits)
 	{
 		_UnsuppliedOutcome = outcome;
 		_IntervalBeforeUnsuppliedOutcome = durationBeforeOutcome;
@@ -71,8 +88,8 @@ namespace GUBS_Supply
 		return SupplyLevelDefinition(SupplyLevel::NONE, 0, 0, 0, 0);
 	}
 
-	void SupplyRequirement::IntializeRequirementContainer(float supplyUnitQuantity, SupplyContainerType containerType, float containerQuantity)
-	{	
+	void SupplyRequirement::IntializeRequirementContainer(double supplyUnitQuantity, SupplyContainerType containerType, double containerQuantity)
+	{
 		_Quantity = supplyUnitQuantity;
 		_ContainerType = containerType;
 		_InnerCount = containerQuantity;

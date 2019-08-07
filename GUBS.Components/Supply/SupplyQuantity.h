@@ -12,19 +12,19 @@ namespace GUBS_Supply
 	{
 
 	protected:
-		float _Quantity;
+		double _Quantity;
 
 	public:
 		SupplyQuantity();
-		SupplyQuantity(const _Supply& supplyDef, float quantity);
+		SupplyQuantity(const _Supply& supplyDef, double quantity);
 		virtual ~SupplyQuantity() {}
 
-		void Add(float quantity);
+		void Add(double quantity);
 
-		bool TryDeplete(float quantity);
-		float ForceDeplete(float quantity);
+		bool TryDeplete(double quantity);
+		double ForceDeplete(double quantity);
 
-		float Quantity() const { return _Quantity; }
+		double Quantity() const { return _Quantity; }
 
 		const _Supply& GetSupplyDef() const { return *this; }
 		bool IsDepleted() const { return _Quantity == 0; }

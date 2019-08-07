@@ -9,17 +9,17 @@ namespace GUBS_Supply
 		DBUG("SupplyQuantity");
 	}
 
-	SupplyQuantity::SupplyQuantity(const _Supply& supplyDef, float quantity) : _Supply(supplyDef), _Quantity(quantity)
+	SupplyQuantity::SupplyQuantity(const _Supply& supplyDef, double quantity) : _Supply(supplyDef), _Quantity(quantity)
 	{
 		DBUG("SupplyQuantity");
 	}
 
-	void SupplyQuantity::Add(float quantity)
+	void SupplyQuantity::Add(double quantity)
 	{
 		_Quantity += quantity;
 	}
 
-	bool SupplyQuantity::TryDeplete(float quantity)
+	bool SupplyQuantity::TryDeplete(double quantity)
 	{
 		if (_Quantity >= quantity)
 		{
@@ -29,7 +29,7 @@ namespace GUBS_Supply
 		return false;
 	}
 
-	float SupplyQuantity::ForceDeplete(float quantity)
+	double SupplyQuantity::ForceDeplete(double quantity)
 	{
 		if (_Quantity >= quantity)
 		{
@@ -38,7 +38,7 @@ namespace GUBS_Supply
 		}
 		else
 		{
-			float quantityOver = quantity - _Quantity;
+			double quantityOver = quantity - _Quantity;
 			_Quantity = 0;
 			return quantityOver;
 		}

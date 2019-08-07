@@ -19,19 +19,17 @@ namespace GUBS_Supply
 		MeasurementUnit _Units;
 
 		//	All mass measurements are in KILOGRAMS
-		float _MassPerUnit;
+		double _MassPerUnit;
 		Volume _VolumePerUnit;
 
 		std::string _Name;
 		std::string _Description;
-
-		_Supply();
 		_Supply(unsigned long key, const _Supply& def);
-		_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, float massPer, const Volume& volumePer);
+		_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer);
 
 	public:
-
-
+		
+		_Supply();
 		_Supply(const _Supply& def);
 		_Supply(_Supply&& def) = default;
 		

@@ -28,7 +28,7 @@ namespace GUBS_Supply
 		_Id = key;
 	}
 
-	_Supply::_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, float massPer, const Volume& volumePer)
+	_Supply::_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer)
 		: _Id(id), _Name(supplyName), _Description(description), _Type(type), _SubType(subType), _Units(unit), _MassPerUnit(massPer), _VolumePerUnit(volumePer)
 	{
 	}
@@ -61,14 +61,14 @@ namespace GUBS_Supply
 
 	unsigned long _Supply::fullHash() const
 	{
-		std::hash<float> floatHash;
+		std::hash<double> floatHash;
 		EnumClassHash enumHash;
 
-		unsigned long ret = typeHash() << 24 
-			^ enumHash(_SubType) << 12
-			^ enumHash(_Units) << 8
-			^ floatHash(_MassPerUnit) << 4
-			^ floatHash(static_cast<float>(_VolumePerUnit));
+		unsigned long ret = (long)typeHash() << 24 
+			^ (long)enumHash(_SubType) << 12
+			^ (long)enumHash(_Units) << 8
+			^ (long)floatHash(_MassPerUnit) << 4
+			^ (long)floatHash(static_cast<double>(_VolumePerUnit));
 
 		return ret;
 	}

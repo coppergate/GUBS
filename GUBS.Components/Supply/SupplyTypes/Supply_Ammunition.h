@@ -27,7 +27,7 @@ namespace GUBS_Supply
 			_Type = SupplyType::AMMUNITION;
 		}
 
-		Supply_Ammunition(unsigned long id, const std::string& supplyName, const std::string& description, SupplySubType subType, MeasurementUnit unit, float massPer, const Volume& volumePer)
+		Supply_Ammunition(unsigned long id, const std::string& supplyName, const std::string& description, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer)
 			:_Supply(id, supplyName, description, SupplyType::AMMUNITION, subType, unit, massPer, volumePer)
 		{
 			DBUG("Supply_Ammunition");

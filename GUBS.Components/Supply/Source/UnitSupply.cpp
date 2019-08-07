@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Supply.h"
 #include "UnitSupply.h"
+#include <SupplyScopeAnswer.h>
 
 namespace GUBS_Supply
 {
@@ -16,28 +17,56 @@ namespace GUBS_Supply
 	{
 	}
 
-	void UnitSupply::Consume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
+	void UnitSupply::Consume(const std::vector<UnitizedValue>& consumptionDriverAmounts)
 	{
 		for (auto& itor : *this)
 		{
 			auto supply = itor.second.get();
-			UnitizedValue consumption = supply->Consume(consumptionDriverAmounts);			
+			UnitizedValue consumption = supply->Consume(consumptionDriverAmounts);
 		}
 	}
 
-	std::vector<UnitizedValue>  UnitSupply::CalculateScope(const std::vector<SupplyQuantity>& scopeQuestion) const
+	std::vector<SupplyScopeAnswer>  UnitSupply::CalculateScope(const std::vector<SupplyQuantity>& scopeQuestion) const
 	{
-		std::vector<UnitizedValue> scopeAnswer;
+		std::vector<SupplyScopeAnswer> scopeAnswer;
 		for (auto& itor : *this)
 		{
 			auto supply = itor.second.get();
 			auto supplyAnswer = supply->CalculateSupplyScope(scopeQuestion);
-			scopeAnswer.insert(scopeAnswer.end(), supplyAnswer.cbegin(), supplyAnswer.cend());
+			SupplyScopeAnswer answer(supply->UnderlyingSupply(), supplyAnswer);
+			
+			scopeAnswer.emplace_back(answer);
 		}
 		return scopeAnswer;
 	}
 
-	std::vector<UnitizedValue> UnitSupply::CurrentScope() const
+	std::vector<std::tuple<_Supply, SupplyLevel>>  UnitSupply::DetermineSupplyLevelsFromDrivers(const std::vector<SupplyQuantity>& scopeQuestion) const
+	{
+		std::vector<std::tuple<_Supply, SupplyLevel>> scopeAnswer;
+		for (auto& unitSupply : *this)
+		{
+			auto supply = unitSupply.second.get();
+			auto supplyAnswer = supply->DetermineSupplyLevelFromDrivers(scopeQuestion);
+			scopeAnswer.emplace_back(std::make_tuple(*(supply->UnderlyingSupply()), supplyAnswer));
+		}
+		return scopeAnswer;
+	}
+
+	std::vector<std::tuple<_Supply, SupplyLevel>>  UnitSupply::CurrentSupplyLevels() const
+	{
+		std::vector<std::tuple<_Supply, SupplyLevel>> scopeAnswer;
+		for (auto& unitSupply : *this)
+		{
+			auto supply = unitSupply.second.get();
+			auto supplyAnswer = supply->CurrentSupplyLevel();
+			scopeAnswer.emplace_back(std::make_tuple(*(supply->UnderlyingSupply()), supplyAnswer));
+		}
+		return scopeAnswer;
+	}
+	
+
+
+	std::vector<SupplyScopeAnswer> UnitSupply::CurrentScope() const
 	{
 		std::vector<SupplyQuantity> scopeQuestion;
 
@@ -64,7 +93,7 @@ namespace GUBS_Supply
 	{
 		auto itor = this->find(supplyQuantity->hash());
 		if (itor == end())
-		{		
+		{
 			emplace(std::make_pair(supplyQuantity->hash(), std::unique_ptr<UnitSupplyElement>(supplyQuantity)));
 		}
 	}
@@ -87,7 +116,7 @@ namespace GUBS_Supply
 			if (elem->SupplyType() == type)
 			{
 				return elem;
-			}	
+			}
 		}
 		return nullptr;
 	}

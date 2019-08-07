@@ -8,21 +8,21 @@ namespace GUBS_Supply
 {
 	class ISupplyProvider
 	{
-		virtual std::iterator<std::output_iterator_tag, Supply>  GetSupply(SupplyType type, SupplySubType subType, float quantity) = 0;
+		virtual std::iterator<std::output_iterator_tag, Supply>  GetSupply(SupplyType type, SupplySubType subType, double quantity) = 0;
 	};
 
 	class IMovement
 	{
-		float _MinDensity;
-		float _MaxDensity;
-		float _MinFriction;
-		float _MaxFriction;
+		double _MinDensity;
+		double _MaxDensity;
+		double _MinFriction;
+		double _MaxFriction;
 	};
 
 	class ITerrain
 	{
-		float _Density;
-		float _Friction;
+		double _Density;
+		double _Friction;
 	};
 
 }

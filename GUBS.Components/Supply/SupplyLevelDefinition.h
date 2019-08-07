@@ -11,8 +11,12 @@ namespace GUBS_Supply
 {
 	class SupplyLevelDefinition
 	{
+		//	a supply is considered to be at this supply level:
 		SupplyLevel _Level;
-		float _RequiredSupplyLevel;
+		//	if it has a quantity of at least this amount:
+		double _RequiredSupplyLevel;
+		//	if a supply is not available at or above the required quantity
+		//	this action detractor applies:
 		ActionDetractor _Detractor;
 
 
@@ -22,20 +26,20 @@ namespace GUBS_Supply
 
 		SupplyLevelDefinition(const SupplyLevelDefinition& lvl);
 
-		SupplyLevelDefinition(SupplyLevel lvl, float requiredSupplyLevel, ActionDetractor detractor);
+		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, ActionDetractor detractor);
 
-		SupplyLevelDefinition(SupplyLevel lvl, float requiredSupplyLevel, float moveDetractor, float attDetractor, float defDetractor);
+		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, double moveDetractor, double attDetractor, double defDetractor);
 
 		SupplyLevelDefinition() = delete;
 
-		bool Supplied(float currentSupply);
+		bool Supplied(double currentSupply);
 
 		const SupplyLevel GetSupplyLevel() const
 		{
 			return _Level;
 		}
 
-		const float GetRequiredLevel() const
+		const double GetRequiredLevel() const
 		{
 			return _RequiredSupplyLevel;
 		}

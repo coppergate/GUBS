@@ -5,7 +5,7 @@
 
 namespace GUBS_Supply
 {
-	ActionDetractor::ActionDetractor(float moveDetractor, float attDetractor, float defDetractor)
+	ActionDetractor::ActionDetractor(double moveDetractor, double attDetractor, double defDetractor)
 		: _Movement(moveDetractor), _Attack(attDetractor), _Defense(defDetractor)
 	{
 

@@ -49,7 +49,7 @@ namespace GUBS_Supply
 		UNSUPPLIED = 1,
 		MINIMAL,
 		RESTRICTED,
-		FULL,
+		SUPPLIED,
 		SUPPLY_LEVELS,
 	};
 
@@ -87,9 +87,9 @@ namespace GUBS_Supply
 	struct EnumClassHash
 	{
 		template <typename T>
-		std::size_t operator()(T t) const
+		long operator()(T t) const
 		{
-			return static_cast<std::size_t>(t);
+			return static_cast<long>(t);
 		}
 	};
 }

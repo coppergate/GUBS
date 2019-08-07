@@ -15,11 +15,11 @@ namespace GUBS_Supply
 	class SupplyConsumer
 	{
 		UnitSupplyLookup _Supplies;
-		float _IntervalsSinceUnsupplied;
+		double _IntervalsSinceUnsupplied;
 
 
 	public:
-		void ConsumeSupplies(MeasurementUnit supplyConsumptionType, float consumptionAmount);
+		void ConsumeSupplies(MeasurementUnit supplyConsumptionType, double consumptionAmount);
 		ActionDetractor& GetCurrentActionDetractor();
 	};
 
