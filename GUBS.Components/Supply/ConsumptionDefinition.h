@@ -1,11 +1,13 @@
 #pragma once
 
-#include "enums.h"
-#include "UnitizedValue.h"
+#include "SupportClasses\enums.h"
+#include "SupportClasses\UnitizedValue.h"
 
 
 namespace GUBS_Supply
 {
+	using GUBS_Enums::MeasurementUnit;
+	using GUBS_Support::UnitizedValue;
 
 	class ConsumptionDefinition
 	{

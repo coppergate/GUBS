@@ -1,4 +1,4 @@
 #include "stdafx.h"
-#include "Supply_Lubrication.h"
+#include "Supply\SupplyTypes\Supply_Lubrication.h"
 
 

@@ -3,10 +3,10 @@
 #include <memory>
 #include <map>
 
-#include "infrastructure.h"
+#include "SupportClasses\infrastructure.h"
 
-#include "SupplyRequirement.h"
-#include "SupplyConsumption.h"
+#include "Supply\SupplyRequirement.h"
+#include "Supply\SupplyConsumption.h"
 
 
 
@@ -54,35 +54,45 @@ namespace GUBS_Supply
 		//	Get the current supply level.
 		SupplyLevel CurrentSupplyLevel() const { return DetermineSupplyLevel(_SupplyQuantity.Quantity()); }
 
+		//	Determine the scope result of consuming the specified supplies
 		std::vector<UnitizedValue> CalculateSupplyScope(const std::vector<SupplyQuantity>& consumption) const;
 
+		//	
 		SupplyQuantity CurrentAvailableSupply() const;
 
+		//	add a consumption definition to this unit supply element
 		void AddConsumption(MeasurementUnit consumptionUnit, double consumptionRate, double consumptionExponent);
 
+		//	add the specifed number of this supplies defined container
 		void AddSupplyContainers(double containers);
 
+		//	the unit of measure this supply element consumes in (eg. diesel is consumed by the liter.)
 		MeasurementUnit ConsumptionUnit() const { return _Consumption.ConsumptionUnit(); }
 
+		//	indicates whether or not this supply element is depleted
 		bool IsDepleted() const { return _SupplyQuantity.IsDepleted(); }
 
 		unsigned long hash() const;
 
+		//	the available quantity of the contained supply
 		double AvailableQuantity() const;
+		//	the type of the contained supply
 		SupplyType SupplyType() const { return get_type(); }
-
+		//	a const ptr to the underlying supply
 		const _Supply* UnderlyingSupply() const { return (_Supply*) this; }
 
+		//	add/modify the supply level information
 		void SetSupplyLevel(SupplyLevel level, double reqSup, double moveDetractor, double attDetractor, double defDetractor)
 		{
 			SupplyRequirement::SetSupplyLevel(level, reqSup, moveDetractor, attDetractor, defDetractor);
 		}
-
+		//	add/modify the unsupplied outcome information.
 		void SetUnsuppliedOutcome(UnsuppliedOutcome outcome, double quantity, MeasurementUnit unit)
 		{
 			SupplyRequirement::SetUnsuppliedOutcome(outcome, quantity, unit);
 		}
 
+		//	Set the underlying requirement information
 		void IntializeRequirementContainer(double supplyUnitQuantity, SupplyContainerType containerType, double containerQuantity)
 		{
 			SupplyRequirement::IntializeRequirementContainer(supplyUnitQuantity, containerType, containerQuantity);
@@ -91,7 +101,7 @@ namespace GUBS_Supply
 
 	};
 
-	typedef std::map<unsigned long, std::unique_ptr<UnitSupplyElement>> UnitSupplyLookup;
+	typedef std::map<unsigned long, std::unique_ptr<UnitSupplyElement>> UnitSupplyElementLookup;
 
 }
 

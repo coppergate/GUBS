@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "infrastructure.h"
-#include "Supply.h" 
+#include "SupportClasses\infrastructure.h"
+#include "Supply\SupplyTypes\Supply.h" 
 
 
 namespace GUBS_Supply

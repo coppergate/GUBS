@@ -42,9 +42,6 @@
     <ClInclude Include="GUBS.Interfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ActionDetractor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Supply\SupplyConsumer.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
@@ -72,9 +69,6 @@
     <ClInclude Include="SupportClasses\enums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Supply\UnitSupply.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Supply\UnitSupplyElement.h">
       <Filter>Header Files\Supply</Filter>
     </ClInclude>
@@ -99,7 +93,28 @@
     <ClInclude Include="SupportClasses\UnitizedValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SupplyScopeAnswer.h">
+    <ClInclude Include="Supply\SupplyScopeAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyLevelAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Propulsion\UnitPropulsionElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitAspects\UnitPropulsionAspect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitAspects\UnitSupplyAspect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitAspects\ActionDetractor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitAspects\UnitAspects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitState\UnitState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -111,9 +126,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionDetractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SupportClasses\Volume.cpp">
@@ -143,9 +155,6 @@
     <ClCompile Include="Supply\Source\UnitSupplyElement.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="Supply\Source\UnitSupply.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Supply\Source\SupplyTypes\Supply_Ammunition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -156,6 +165,24 @@
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
     <ClCompile Include="Supply\Source\SupplyTypes\Supply_Lubrication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Propulsion\Source\UnitPropulsionElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitAspects\Source\UnitAspects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitAspects\Source\UnitPropulsionAspect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitAspects\Source\UnitSupplyAspect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitAspects\Source\ActionDetractor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitState\Source\UnitState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

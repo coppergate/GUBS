@@ -3,24 +3,29 @@
 
 #include "logog.hpp"
 
-#include "ActionDetractor.h"
-#include "Supply.h"
-#include "Supply_Ammunition.h"
-#include "Supply_Lubrication.h"
-#include "Supply_Power.h"
-#include "SupplyConsumer.h"
-#include "SupplyConsumption.h"
-#include "SupplyContainer.h"
-#include "SupplyDefinitionCatalog.h"
-#include "SupplyRequirement.h"
-#include "UnitSupply.h"
-#include "UnitSupplyElement.h"
-#include "Volume.h"
+#include "UnitAspects\ActionDetractor.h"
+#include "UnitAspects\UnitSupplyAspect.h"
+
+
+#include "Supply\SupplyTypes\Supply.h"
+#include "Supply\SupplyTypes\Supply_Ammunition.h"
+#include "Supply\SupplyTypes\Supply_Lubrication.h"
+#include "Supply\SupplyTypes\Supply_Power.h"
+#include "Supply\SupplyConsumer.h"
+#include "Supply\SupplyConsumption.h"
+#include "Supply\SupplyContainer.h"
+#include "Supply\SupplyDefinitionCatalog.h"
+#include "Supply\SupplyRequirement.h"
+#include "Supply\UnitSupplyElement.h"
+#include "SupportClasses\Volume.h"
 
 
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace GUBS_Supply;
+using namespace GUBS_Support;
+using namespace GUBS_Enums;
+using namespace GUBS_UnitAspects;
 
 namespace GUBSTests
 {
@@ -292,7 +297,7 @@ namespace GUBSTests
 			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
 			oilSupply->AddSupplyContainers(1.0);
 
-			UnitSupply unitSupply;
+			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(supply);
 			unitSupply.AddSupplyElement(oilSupply);
 
@@ -341,7 +346,7 @@ namespace GUBSTests
 			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
 			oilSupply->AddSupplyContainers(1.0);
 
-			UnitSupply unitSupply;
+			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(fuelSupply);
 			unitSupply.AddSupplyElement(oilSupply);
 
@@ -407,7 +412,7 @@ namespace GUBSTests
 			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
 			oilSupply->AddSupplyContainers(1.0);
 
-			UnitSupply unitSupply;
+			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(fuelSupply);
 			unitSupply.AddSupplyElement(oilSupply);
 
@@ -418,23 +423,23 @@ namespace GUBSTests
 			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
 			//	Travel for ~15 min
 			drivers.emplace_back(UnitizedValue(MeasurementUnit::SECOND, 1000));
-			auto currentScope = unitSupply.CurrentScope();
+			std::vector<SupplyScopeAnswer> currentScope = unitSupply.CurrentScope();
 			int count = 0;
 			while (count < 100)
 			{
 				unitSupply.Consume(drivers);
-				auto nextScope = unitSupply.CurrentScope();
+				const std::vector<SupplyScopeAnswer> nextScope = unitSupply.CurrentScope();
 
-				auto lastFuelScopeAnswer = currentScope[0].ScopeAnswer();
-				auto fuelScopeAnswer = nextScope[0].ScopeAnswer();
+				const std::vector<UnitizedValue> lastFuelScopeAnswer = currentScope[0].ScopeAnswer();
+				const std::vector<UnitizedValue> fuelScopeAnswer = nextScope[0].ScopeAnswer();
 
 				auto distance = lastFuelScopeAnswer[0].Value - fuelScopeAnswer[0].Value;
 				Assert::AreEqual(10110.0, distance, 1.0);
 				currentScope = nextScope;
 				count++;
 			}
-			auto finalScope = unitSupply.CurrentScope();
-			auto finalFuelScope = finalScope[0].ScopeAnswer();
+			const std::vector<SupplyScopeAnswer> finalScope = unitSupply.CurrentScope();
+			const std::vector<UnitizedValue> finalFuelScope = finalScope[0].ScopeAnswer();
 
 			//	remaining distance with respect to fuel
 			Assert::AreEqual(8989000.0, finalFuelScope[0].Value, 0.01);
@@ -464,7 +469,7 @@ namespace GUBSTests
 			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
 			oilSupply->AddSupplyContainers(1.0);
 
-			UnitSupply unitSupply;
+			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(fuelSupply);
 			unitSupply.AddSupplyElement(oilSupply);
 
@@ -484,25 +489,21 @@ namespace GUBSTests
 			{
 				unitSupply.Consume(drivers);
 				auto latestLevels = unitSupply.CurrentSupplyLevels();
-				_Supply latestSupply;
-				SupplyLevel latestLevel;
-				std::tie(latestSupply, latestLevel) = latestLevels[0];
 
-				_Supply currentSupply;
-				SupplyLevel currentLevel;
-				std::tie(currentSupply, currentLevel) = currentLevels[0];
+				auto latestFuelLevelAnswer = latestLevels[0].SupplyAnswer();
+				auto currentFuelLevelAnswer = currentLevels[0].SupplyAnswer();
 
-				if (latestLevel != currentLevel)
+				if (latestFuelLevelAnswer != currentFuelLevelAnswer)
 				{
-					if (currentLevel == SupplyLevel::SUPPLIED && latestLevel == SupplyLevel::RESTRICTED)
+					if (currentFuelLevelAnswer == SupplyLevel::SUPPLIED && latestFuelLevelAnswer == SupplyLevel::RESTRICTED)
 					{
 						Assert::AreEqual(890, count);
 					}
-					if (currentLevel == SupplyLevel::RESTRICTED && latestLevel == SupplyLevel::MINIMAL)
+					else if (currentFuelLevelAnswer == SupplyLevel::RESTRICTED && latestFuelLevelAnswer == SupplyLevel::MINIMAL)
 					{
 						Assert::AreEqual(939, count);
 					}
-					if (currentLevel == SupplyLevel::MINIMAL && latestLevel == SupplyLevel::UNSUPPLIED)
+					else if (currentFuelLevelAnswer == SupplyLevel::MINIMAL && latestFuelLevelAnswer == SupplyLevel::UNSUPPLIED)
 					{
 						Assert::AreEqual(979, count);
 					}
@@ -512,12 +513,18 @@ namespace GUBSTests
 
 				count++;
 			}
-			auto finalScope = unitSupply.CurrentScope();
-			auto fuelScope = finalScope[0];
 
-			Assert::AreEqual(0.0, fuelScope.ScopeAnswer()[0].Value);
-			Assert::AreEqual(0.0, fuelScope.ScopeAnswer()[1].Value);
-			Assert::AreEqual(0.0, fuelScope.ScopeAnswer()[2].Value);
+			auto lastFuelLevelAnswer = unitSupply.CurrentSupplyLevels()[0].SupplyAnswer();
+
+			Assert::IsTrue(SupplyLevel::UNSUPPLIED == lastFuelLevelAnswer);
+			
+			auto finalScope = unitSupply.CurrentScope();
+			auto finalFuelScope = finalScope[0];
+			//	Check the fuel level scopes, they should be all zero as there
+			//	shouldn't be any fuel.
+			Assert::AreEqual(0.0, finalFuelScope.ScopeAnswer()[0].Value);
+			Assert::AreEqual(0.0, finalFuelScope.ScopeAnswer()[1].Value);
+			Assert::AreEqual(0.0, finalFuelScope.ScopeAnswer()[2].Value);
 
 			DBUG("CheckUnitSupplyLevel - Exit");
 		}

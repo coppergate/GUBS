@@ -1,8 +1,8 @@
 #pragma once
 
-#include "infrastructure.h"
+#include "SupportClasses\infrastructure.h"
 
-namespace GUBS_Supply
+namespace GUBS_Support
 {
 
 	class Volume

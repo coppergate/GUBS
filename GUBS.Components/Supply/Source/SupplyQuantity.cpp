@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "SupplyQuantity.h"
+#include "Supply\SupplyQuantity.h"
 
 namespace GUBS_Supply
 {

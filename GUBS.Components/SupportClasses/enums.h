@@ -3,7 +3,7 @@
 #include  <memory>
 
 
-namespace GUBS_Supply
+namespace GUBS_Enums
 {
 
 	enum class SupplyType : unsigned char
@@ -87,9 +87,9 @@ namespace GUBS_Supply
 	struct EnumClassHash
 	{
 		template <typename T>
-		long operator()(T t) const
+		unsigned long operator()(T t) const
 		{
-			return static_cast<long>(t);
+			return static_cast<unsigned long>(t);
 		}
 	};
 }

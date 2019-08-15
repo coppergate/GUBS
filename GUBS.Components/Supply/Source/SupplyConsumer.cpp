@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SupplyConsumer.h"
+#include "Supply\SupplyConsumer.h"
 
 
 namespace GUBS_Supply
@@ -10,9 +10,9 @@ namespace GUBS_Supply
 
 	}
 
-	ActionDetractor& SupplyConsumer::GetCurrentActionDetractor()
+	GUBS_UnitAspects::ActionDetractor& SupplyConsumer::GetCurrentActionDetractor()
 	{//	Just for compile sake.
-		return *(new ActionDetractor(0, 0, 0));
+		return *(new GUBS_UnitAspects::ActionDetractor(0, 0, 0));
 	}
 
 }

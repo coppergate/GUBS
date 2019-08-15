@@ -3,8 +3,8 @@
 #include <algorithm> 
 #include <memory>
 
-#include "UnitSupplyElement.h"
-#include "Supply.h"
+#include "Supply\UnitSupplyElement.h"
+#include "Supply\SupplyTypes\Supply.h"
 
 
 

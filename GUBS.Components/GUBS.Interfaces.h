@@ -1,11 +1,15 @@
 #pragma once
 
-#include "infrastructure.h"
+#include "SupportClasses\infrastructure.h"
 
 class Supply;
 
 namespace GUBS_Supply
 {
+	using GUBS_Enums::SupplyType;
+	using GUBS_Enums::SupplySubType;
+
+
 	class ISupplyProvider
 	{
 		virtual std::iterator<std::output_iterator_tag, Supply>  GetSupply(SupplyType type, SupplySubType subType, double quantity) = 0;

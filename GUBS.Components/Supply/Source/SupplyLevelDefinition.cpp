@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SupplyLevelDefinition.h"
+#include "Supply\SupplyLevelDefinition.h"
 
 
 namespace GUBS_Supply
@@ -12,7 +12,7 @@ namespace GUBS_Supply
 	{
 	}
 
-	SupplyLevelDefinition::SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, ActionDetractor detractor) 
+	SupplyLevelDefinition::SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, GUBS_UnitAspects::ActionDetractor detractor)
 		: SupplyLevelDefinition(lvl, requiredSupplyLevel, detractor._Movement, detractor._Attack, detractor._Defense)
 	{
 

@@ -2,13 +2,14 @@
 #include <vector>
 #include <memory>
 
-#include "infrastructure.h"
-
-#include "ActionDetractor.h"
+#include "SupportClasses\infrastructure.h"
+#include "UnitAspects\ActionDetractor.h"
 
 
 namespace GUBS_Supply
 {
+	using GUBS_Enums::SupplyLevel;
+
 	class SupplyLevelDefinition
 	{
 		//	a supply is considered to be at this supply level:
@@ -17,7 +18,7 @@ namespace GUBS_Supply
 		double _RequiredSupplyLevel;
 		//	if a supply is not available at or above the required quantity
 		//	this action detractor applies:
-		ActionDetractor _Detractor;
+		GUBS_UnitAspects::ActionDetractor _Detractor;
 
 
 	public:
@@ -26,7 +27,7 @@ namespace GUBS_Supply
 
 		SupplyLevelDefinition(const SupplyLevelDefinition& lvl);
 
-		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, ActionDetractor detractor);
+		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, GUBS_UnitAspects::ActionDetractor detractor);
 
 		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, double moveDetractor, double attDetractor, double defDetractor);
 
@@ -44,7 +45,7 @@ namespace GUBS_Supply
 			return _RequiredSupplyLevel;
 		}
 
-		const ActionDetractor& GetActionDetractor() const
+		const GUBS_UnitAspects::ActionDetractor& GetActionDetractor() const
 		{
 			return _Detractor;
 		}

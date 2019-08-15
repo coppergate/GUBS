@@ -3,13 +3,17 @@
 #include <algorithm>
 #include <vector>
 
-#include "infrastructure.h"
-#include "SupplyContainer.h"
-#include "ConsumptionDefinition.h"
+#include "SupportClasses\infrastructure.h"
+#include "Supply\SupplyContainer.h"
+#include "Supply\ConsumptionDefinition.h"
 
 
 namespace GUBS_Supply
 {
+
+	using GUBS_Enums::MeasurementUnit;
+	using GUBS_Support::UnitizedValue;
+
 	// SupplyConsumption defines the type of supply
 	//	and the units by which the supply is consumed
 	//	e.g. Diesel would be a type of supply and it would be consumed in liters

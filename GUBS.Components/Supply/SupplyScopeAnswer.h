@@ -1,13 +1,15 @@
 #pragma once
 
 
-#include "infrastructure.h"
-#include "Supply.h" 
-#include <SupportClasses\UnitizedValue.h>
+#include "SupportClasses\infrastructure.h"
+#include "Supply\SupplyTypes\Supply.h" 
+#include "SupportClasses\UnitizedValue.h"
 
 
 namespace GUBS_Supply
 {
+	using GUBS_Support::UnitizedValue;
+
 	class SupplyScopeAnswer : public _Supply
 	{
 		std::vector<UnitizedValue> _ScopeAnswer;
@@ -16,7 +18,7 @@ namespace GUBS_Supply
 		SupplyScopeAnswer(const _Supply* supply, const std::vector<UnitizedValue>& answer)
 			: _Supply(*supply), _ScopeAnswer(answer)
 		{
-
+			DBUG("SupplyScopeAnswer");
 		}
 
 		const std::vector<UnitizedValue>& ScopeAnswer() const { return _ScopeAnswer; }

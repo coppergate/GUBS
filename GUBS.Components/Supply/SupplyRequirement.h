@@ -2,14 +2,19 @@
 
 #include <memory>
 
-#include "infrastructure.h"
+#include "SupportClasses\infrastructure.h"
 
-#include "SupplyLevelDefinition.h"
-#include "SupplyContainer.h"
+#include "Supply\SupplyLevelDefinition.h"
+#include "Supply\SupplyContainer.h"
 
 
 namespace GUBS_Supply
 {
+	using GUBS_Enums::UnsuppliedOutcome;
+	using GUBS_Enums::SupplyLevel;
+	using GUBS_Enums::MeasurementUnit;
+	using GUBS_Enums::SupplyContainerType;
+
 	class SupplyRequirement : virtual public SupplyContainer
 	{
 		std::unique_ptr<SupplyLevelList> _SupplyLevels; 

@@ -2,13 +2,15 @@
 
 #include <memory>
 
-#include "infrastructure.h"
-#include "SupplyQuantity.h"
+#include "SupportClasses\infrastructure.h"
+#include "Supply\SupplyQuantity.h"
 
 using std::unique_ptr;
 
 namespace GUBS_Supply
 {
+	using GUBS_Enums::SupplyContainerType;
+
 	class SupplyContainer;
 
 	class SupplyContainer : virtual protected SupplyQuantity

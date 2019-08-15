@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SupplyConsumption.h"
+#include "Supply\SupplyConsumption.h"
 
 
 namespace GUBS_Supply

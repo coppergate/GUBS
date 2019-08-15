@@ -3,12 +3,16 @@
 #include <string>
 #include <functional>
 
-#include "infrastructure.h"
-#include "Volume.h"
+#include "SupportClasses\infrastructure.h"
+#include "SupportClasses\Volume.h"
 
 
 namespace GUBS_Supply
 {
+	using GUBS_Enums::SupplyType;
+	using GUBS_Enums::SupplySubType;
+	using GUBS_Enums::MeasurementUnit;
+	using GUBS_Support::Volume;
 
 	class _Supply
 	{

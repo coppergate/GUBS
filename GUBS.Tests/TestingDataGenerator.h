@@ -4,18 +4,15 @@
 
 #include "logog.hpp"
 
-#include "ActionDetractor.h"
-#include "Supply.h"
-#include "SupplyConsumer.h"
-#include "SupplyConsumption.h"
-#include "SupplyContainer.h"
-#include "SupplyDefinitionCatalog.h"
-#include "SupplyRequirement.h"
-#include "UnitSupplyElement.h"
-#include "Volume.h"
-
-
-
+#include "UnitAspects\ActionDetractor.h"
+#include "Supply\SupplyTypes\Supply.h"
+#include "Supply\SupplyConsumer.h"
+#include "Supply\SupplyConsumption.h"
+#include "Supply\SupplyContainer.h"
+#include "Supply\SupplyDefinitionCatalog.h"
+#include "Supply\SupplyRequirement.h"
+#include "Supply\UnitSupplyElement.h"
+#include "SupportClasses\Volume.h"
 
 
 using namespace GUBS_Supply;

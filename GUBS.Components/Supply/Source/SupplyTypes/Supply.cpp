@@ -2,7 +2,7 @@
 
 #include "logog.hpp"
 
-#include "Supply.h"
+#include "Supply\SupplyTypes\Supply.h"
 
 #include <string>
 #include <functional>
@@ -51,11 +51,13 @@ namespace GUBS_Supply
 		return typeHash(_Name, _Type);
 	}
 
+	using GUBS_Enums::EnumClassHash;
+
 	unsigned long _Supply::typeHash(const std::string& name, SupplyType type)
 	{
 		EnumClassHash enumHash;
 		std::hash<std::string> stringHash;
-		unsigned long ret = enumHash(type) << 8 ^ stringHash(name);
+		unsigned long ret = enumHash(type) << 8 ^ (long)stringHash(name);
 		return ret;
 	}
 

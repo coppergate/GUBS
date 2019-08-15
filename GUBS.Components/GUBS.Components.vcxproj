@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components\SupportClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,8 +169,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ActionDetractor.h" />
-    <ClInclude Include="SupplyScopeAnswer.h" />
+    <ClInclude Include="UnitAspects\ActionDetractor.h" />
+    <ClInclude Include="Supply\SupplyLevelAnswer.h" />
+    <ClInclude Include="Supply\SupplyScopeAnswer.h" />
     <ClInclude Include="Supply\ConsumptionDefinition.h" />
     <ClInclude Include="Supply\SupplyTypes\Supply_Ammunition.h" />
     <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h" />
@@ -188,13 +189,17 @@
     <ClInclude Include="Supply\SupplyRequirement.h" />
     <ClInclude Include="Supply\SupplyTypes\Supply_Power.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Supply\UnitSupply.h" />
+    <ClInclude Include="UnitAspects\UnitSupplyAspect.h" />
     <ClInclude Include="Supply\UnitSupplyElement.h" />
     <ClInclude Include="SupportClasses\Volume.h" />
     <ClInclude Include="SupportClasses\UnitizedValue.h" />
+    <ClInclude Include="UnitAspects\UnitPropulsionAspect.h" />
+    <ClInclude Include="Propulsion\UnitPropulsionElement.h" />
+    <ClInclude Include="UnitAspects\UnitAspects.h" />
+    <ClInclude Include="UnitState\UnitState.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ActionDetractor.cpp" />
+    <ClCompile Include="UnitAspects\Source\ActionDetractor.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="GUBS.Components.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -212,11 +217,15 @@
     <ClCompile Include="Supply\Source\SupplyLevelDefinition.cpp" />
     <ClCompile Include="Supply\Source\SupplyRequirement.cpp" />
     <ClCompile Include="Supply\Source\SupplyTypes\Supply_Power.cpp" />
-    <ClCompile Include="Supply\Source\UnitSupply.cpp" />
+    <ClCompile Include="UnitAspects\Source\UnitSupplyAspect.cpp" />
     <ClCompile Include="Supply\Source\UnitSupplyElement.cpp" />
     <ClCompile Include="Supply\Source\SupplyTypes\Supply_Ammunition.cpp" />
     <ClCompile Include="Supply\Source\SupplyTypes\Supply_Lubrication.cpp" />
     <ClCompile Include="SupportClasses\Volume.cpp" />
+    <ClCompile Include="UnitAspects\Source\UnitPropulsionAspect.cpp" />
+    <ClCompile Include="Propulsion\Source\UnitPropulsionElement.cpp" />
+    <ClCompile Include="UnitAspects\Source\UnitAspects.cpp" />
+    <ClCompile Include="UnitState\Source\UnitState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
