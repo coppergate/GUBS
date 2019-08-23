@@ -17,33 +17,14 @@ namespace GUBS_Supply
 	{
 	}
 
-	_Supply::_Supply(const _Supply& def)
-		: _Supply(def._Id, def._Name, def._Description, def._Type, def._SubType, def._Units, def._MassPerUnit, def._VolumePerUnit)
-	{
-	}
-
 	_Supply::_Supply(unsigned long key, const _Supply& def)
-		: _Supply(def)
+		: _Supply(key, def._Name, def._Description, def._Type, def._SubType, def._Units, def._MassPerUnit, def._VolumePerUnit)
 	{
-		_Id = key;
 	}
 
 	_Supply::_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer)
 		: _Id(id), _Name(supplyName), _Description(description), _Type(type), _SubType(subType), _Units(unit), _MassPerUnit(massPer), _VolumePerUnit(volumePer)
 	{
-	}
-	
-	_Supply& _Supply::operator=(const _Supply& rhs)
-	{
-		_Id = rhs._Id;
-		_Type = rhs._Type;
-		_SubType = rhs._SubType;
-		_Units = rhs._Units;
-		_Name = rhs._Name;
-		_Description = rhs._Description;
-		_MassPerUnit = rhs._MassPerUnit;
-		_VolumePerUnit = rhs._VolumePerUnit;
-		return *this;
 	}
 
 	unsigned long _Supply::typeHash() const
@@ -66,7 +47,7 @@ namespace GUBS_Supply
 		std::hash<double> floatHash;
 		EnumClassHash enumHash;
 
-		unsigned long ret = (long)typeHash() << 24 
+		unsigned long ret = (long)typeHash() << 24
 			^ (long)enumHash(_SubType) << 12
 			^ (long)enumHash(_Units) << 8
 			^ (long)floatHash(_MassPerUnit) << 4
@@ -81,4 +62,5 @@ std::size_t std::hash<GUBS_Supply::_Supply>::operator()(const GUBS_Supply::_Supp
 {
 	return inDef.get_key();
 }
+
 

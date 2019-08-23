@@ -28,20 +28,13 @@ namespace GUBS_Supply
 
 		std::string _Name;
 		std::string _Description;
-		_Supply(unsigned long key, const _Supply& def);
-		_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer);
 
 	public:
 		
 		_Supply();
-		_Supply(const _Supply& def);
-		_Supply(_Supply&& def) = default;
-		
+		_Supply(unsigned long key, const _Supply& def);
+		_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer);
 		static const _Supply EmptySupply;
-		
-		virtual ~_Supply()
-		{
-		}
 
 		bool HasUnitsOf(MeasurementUnit unit) const { return _Units == unit; }
 		MeasurementUnit SupplyUnits() const { return _Units; }
@@ -58,7 +51,6 @@ namespace GUBS_Supply
 		bool isSupplyOfType(SupplyType type) const { return  type == _Type; }
 		bool isEmptySupply() const { return _Id == 0; }
 
-		_Supply& operator=(const _Supply& rhs);
 		bool operator==(const _Supply& rhs) const { return fullHash() == rhs.fullHash(); }
 		bool operator!=(const _Supply& rhs) const { return !(operator==(rhs)); }
 

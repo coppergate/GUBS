@@ -71,13 +71,13 @@ namespace GUBSTests
 		TEST_METHOD(CreateSupplyDefTest)
 		{
 			DBUG("CreateSupplyDefTest");
-			_Supply* supplyDef = new Supply_Ammunition(1, "9mm-hp", "9mm, hollow-point, copper jacket",
+			Supply_Ammunition* supplyDef = new Supply_Ammunition(1, "9mm-hp", "9mm, hollow-point, copper jacket",
 				SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+			//_Supply* supplyDef = new _Supply(1, "9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
+			//	SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
 			Assert::IsTrue(supplyDef->isSupplyOfType(SupplyType::AMMUNITION));
-			unsigned int key = supplyDef->get_key();
-
-			bool isEmpty = supplyDef->isEmptySupply();
-			Assert::IsFalse(isEmpty);
+			Assert::IsTrue(1u == supplyDef->get_key());
+			Assert::IsFalse(supplyDef->isEmptySupply());
 			Assert::IsTrue(supplyDef->HasUnitsOf(MeasurementUnit::EACH));
 			delete supplyDef;
 			DBUG("CreateSupplyDefTest - Exit");
@@ -128,6 +128,7 @@ namespace GUBSTests
 			//	1 piece supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	1 container with supply of 100 pieces
+
 			SupplyContainer container(supply, SupplyContainerType::RIGID, 100.0);
 
 			Assert::AreEqual(100.0, container.getContainerQuantity());
@@ -248,31 +249,35 @@ namespace GUBSTests
 		TEST_METHOD(CatalogLookup)
 		{
 			DBUG("CatalogLookup");
-			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
+			SupplyDefinitionCatalog catalog;
 
 			//	1 litre of diesel fuel
 			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
 				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.89, Volume(.1, .1, .1));
-			supplyDef.set_key(catalog->EnsureSupplyDefinition(supplyDef));
+			supplyDef.set_key(catalog.EnsureSupplyDefinition(supplyDef));
 
 			//	1 litre of oil
 			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL - 10w40", "Engine oil, multi-weight",
 				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyOilDef));
+			supplyOilDef.set_key(catalog.EnsureSupplyDefinition(supplyOilDef));
 			//	1 litre of oil
 			Supply_Lubrication supplyOilDef2(0, "LUBRICATING OIL - 10w30", "Engine oil, multi-weight",
 				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef2.set_key(catalog->EnsureSupplyDefinition(supplyOilDef2));
+			supplyOilDef2.set_key(catalog.EnsureSupplyDefinition(supplyOilDef2));
 
-			Assert::IsTrue(supplyDef.get_key() == catalog->GetSupplyDef(supplyDef).get_key());
-			Assert::IsTrue(supplyOilDef.get_key() == catalog->GetSupplyDef(supplyOilDef).get_key());
+			auto p = catalog.GetSupplyDef(supplyDef);
 
-			std::vector<const _Supply*> supplies = catalog->GetSupplyOfType(SupplyType::POWER);
+			Assert::IsTrue(supplyDef.get_key() == p.get_key());
+			Assert::IsTrue(supplyOilDef.get_key() == catalog.GetSupplyDef(supplyOilDef).get_key());
+			Assert::IsTrue(supplyOilDef2.get_key() == catalog.GetSupplyDef(supplyOilDef2).get_key());
+
+			std::vector<_Supply> supplies = catalog.GetSupplyOfType(SupplyType::POWER);
 			Assert::IsTrue(supplies.size() == 1);
-			Assert::IsTrue(supplyDef.get_key() == supplies[0]->get_key());
-			supplies = catalog->GetSupplyOfType(SupplyType::LUBRICATION);
+			Assert::IsTrue(supplyDef.get_key() == supplies[0].get_key());
+
+			supplies = catalog.GetSupplyOfType(SupplyType::LUBRICATION);
 			Assert::IsTrue(supplies.size() == 2);
-			Assert::IsTrue(supplyOilDef.get_key() == supplies[0]->get_key());
+			Assert::IsTrue(supplyOilDef.get_key() == supplies[0].get_key());
 
 			DBUG("CatalogLookup - Exit");
 		}
@@ -517,7 +522,7 @@ namespace GUBSTests
 			auto lastFuelLevelAnswer = unitSupply.CurrentSupplyLevels()[0].SupplyAnswer();
 
 			Assert::IsTrue(SupplyLevel::UNSUPPLIED == lastFuelLevelAnswer);
-			
+
 			auto finalScope = unitSupply.CurrentScope();
 			auto finalFuelScope = finalScope[0];
 			//	Check the fuel level scopes, they should be all zero as there

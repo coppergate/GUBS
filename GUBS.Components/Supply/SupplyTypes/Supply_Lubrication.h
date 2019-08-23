@@ -12,13 +12,7 @@ namespace GUBS_Supply
 			_Type = SupplyType::LUBRICATION;
 		}
 
-		Supply_Lubrication(const _Supply& def) :_Supply(def)
-		{
-			DBUG("Supply_Lubrication");
-			_Type = SupplyType::LUBRICATION;
-		}
-		Supply_Lubrication(Supply_Lubrication&& def) = default;
-
+	
 		Supply_Lubrication(unsigned long key, const _Supply& def) :_Supply(key, def)
 		{
 			DBUG("Supply_Lubrication");
@@ -32,7 +26,6 @@ namespace GUBS_Supply
 			_Type = SupplyType::LUBRICATION;
 		}
 
-		virtual ~Supply_Lubrication() {}
 	};
 
 }

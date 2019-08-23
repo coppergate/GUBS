@@ -199,6 +199,7 @@
     <ClInclude Include="UnitState\UnitState.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SupportClasses\UnitizedValue.cpp" />
     <ClCompile Include="UnitAspects\Source\ActionDetractor.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="GUBS.Components.cpp" />

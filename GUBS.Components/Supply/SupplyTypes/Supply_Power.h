@@ -13,14 +13,6 @@ namespace GUBS_Supply
 			_Type = SupplyType::POWER;
 		}
 
-		Supply_Power(const _Supply& def) :_Supply(def)
-		{
-			DBUG("Supply_Power");
-			_Type = SupplyType::POWER;
-		}
-
-		Supply_Power(Supply_Power&& def) = default;
-
 		Supply_Power(unsigned long key, const _Supply& def) :_Supply(key, def)
 		{
 			DBUG("Supply_Power");
@@ -34,7 +26,6 @@ namespace GUBS_Supply
 			_Type = SupplyType::POWER;
 		}
 
-		virtual ~Supply_Power() {}
 	};
 
 }
