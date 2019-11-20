@@ -3,7 +3,7 @@
 #include "SupportClasses\infrastructure.h"
 
 
-#include "Supply\SupplyTypes\Supply.h"
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h"
 #include "Supply\UnitSupplyElement.h"
 #include "Supply\SupplyRequirement.h"
 #include "Supply\SupplyConsumption.h"
@@ -20,7 +20,7 @@ namespace GUBS_Supply
 
 	public:
 		void ConsumeSupplies(MeasurementUnit supplyConsumptionType, double consumptionAmount);
-		GUBS_UnitAspects::ActionDetractor& GetCurrentActionDetractor();
+		GUBS_UnitAspects::ActionDetractor GetCurrentActionDetractor();
 	};
 
 }

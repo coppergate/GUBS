@@ -17,7 +17,6 @@ namespace GUBS_Support
 		DBUG("UnitizedValue - Unit(%d) , Value(%f)", unit, value);
 	}
 
-	
-
+	const UnitizedValue UnitizedValue::EmptyValue;
 
 }

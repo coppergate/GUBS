@@ -1,22 +1,22 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
+#include <memory>
+
 #include "logog.hpp"
 
 #include "UnitAspects\ActionDetractor.h"
 #include "UnitAspects\UnitSupplyAspect.h"
 
 
-#include "Supply\SupplyTypes\Supply.h"
-#include "Supply\SupplyTypes\Supply_Ammunition.h"
-#include "Supply\SupplyTypes\Supply_Lubrication.h"
-#include "Supply\SupplyTypes\Supply_Power.h"
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h"
 #include "Supply\SupplyConsumer.h"
 #include "Supply\SupplyConsumption.h"
 #include "Supply\SupplyContainer.h"
 #include "Supply\SupplyDefinitionCatalog.h"
 #include "Supply\SupplyRequirement.h"
 #include "Supply\UnitSupplyElement.h"
+#include "Supply\SupplyScopeAnswer.h"
 #include "SupportClasses\Volume.h"
 
 
@@ -26,6 +26,8 @@ using namespace GUBS_Supply;
 using namespace GUBS_Support;
 using namespace GUBS_Enums;
 using namespace GUBS_UnitAspects;
+
+using std::unique_ptr;
 
 namespace GUBSTests
 {
@@ -42,12 +44,15 @@ namespace GUBSTests
 
 	*/
 
+	std::unique_ptr<SupplyDefinitionCatalog> _SupplyCatalog = std::make_unique<SupplyDefinitionCatalog>();
+
 	TEST_CLASS(SupplyTests)
 	{
 
 		logog::LogFile* errFile;
 		logog::Cout* logOut;
 		logog::Cerr* errOut;
+
 
 	public:
 
@@ -71,15 +76,12 @@ namespace GUBSTests
 		TEST_METHOD(CreateSupplyDefTest)
 		{
 			DBUG("CreateSupplyDefTest");
-			Supply_Ammunition* supplyDef = new Supply_Ammunition(1, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
-			//_Supply* supplyDef = new _Supply(1, "9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
-			//	SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
-			Assert::IsTrue(supplyDef->isSupplyOfType(SupplyType::AMMUNITION));
-			Assert::IsTrue(1u == supplyDef->get_key());
-			Assert::IsFalse(supplyDef->isEmptySupply());
-			Assert::IsTrue(supplyDef->HasUnitsOf(MeasurementUnit::EACH));
-			delete supplyDef;
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
+															 SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+			Assert::IsTrue(supplyDef.isSupplyOfType(SupplyType::AMMUNITION));
+			Assert::IsTrue(0u != supplyDef.get_key());
+			Assert::IsFalse(supplyDef.isEmptySupply());
+			Assert::IsTrue(supplyDef.HasUnitsOf(MeasurementUnit::EACH));
 			DBUG("CreateSupplyDefTest - Exit");
 		}
 
@@ -87,48 +89,54 @@ namespace GUBSTests
 		{
 			DBUG("CreateSupplyDefCatalogTest");
 
-			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
-			SupplyDefinitionCatalog* catalog = new SupplyDefinitionCatalog();
-			unsigned long key = catalog->EnsureSupplyDefinition(supplyDef);
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
+															 SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+			unsigned long key = supplyDef.get_key();
 
-			const _Supply& retVal = catalog->GetSupplyDef(key);
+			const SupplyTypeDefinition& retVal = _SupplyCatalog->GetSupplyDef(key);
 			Assert::AreEqual(supplyDef.fullHash(), retVal.fullHash());
 
-			const _Supply& retVal1 = catalog->GetSupplyDef(100);
+			const SupplyTypeDefinition& retVal1 = _SupplyCatalog->GetSupplyDef(100);
 			Assert::IsTrue(retVal1.isEmptySupply());
 
-			delete catalog;
+			Assert::IsTrue(_SupplyCatalog->RemoveSupplyDefinition(key));
+			Assert::IsFalse(_SupplyCatalog->RemoveSupplyDefinition(key));
 
 			DBUG("CreateSupplyDefCatalogTest - Exit");
-
 		}
 
 		TEST_METHOD(CreateSupplyTest)
 		{
 			DBUG("CreateSupplyTest");
 
-			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
+															 SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
 
 			SupplyQuantity supply(supplyDef, 100.0);
-
 			Assert::IsTrue(supply.Quantity() == 100.0);
+			//try deplete
+			Assert::IsTrue(supply.TryDeplete(50));
+			Assert::IsTrue(supply.Quantity() == 50.0);
+
+			//force deplete
+			Assert::AreEqual(25.0, supply.ForceDeplete(75.0));
+			Assert::IsTrue(supply.Quantity() == 0.0);
+			// is depleted
+			Assert::IsTrue(supply.IsDepleted());
 
 			DBUG("CreateSupplyTest - Exit");
-
 		}
 
 		TEST_METHOD(CreateSupplyContainerTest)
 		{
 			DBUG("CreateSupplyContainerTest");
 			//	1 piece of ammunition definition
-			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
+															 SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+
 			//	1 piece supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	1 container with supply of 100 pieces
-
 			SupplyContainer container(supply, SupplyContainerType::RIGID, 100.0);
 
 			Assert::AreEqual(100.0, container.getContainerQuantity());
@@ -147,8 +155,9 @@ namespace GUBSTests
 		{
 			DBUG("CreateNestedSupplyContainerTest");
 			//	1 piece of ammunition definition
-			Supply_Ammunition supplyDef(0, "9mm-hp", "9mm, hollow-point, copper jacket",
-				SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
+															 SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+
 			//	1 piece supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	1 magazine holds 20 rounds
@@ -179,8 +188,8 @@ namespace GUBSTests
 		{
 			DBUG("CreateSupplyRequirementTest");
 			//	1 litre of diesel fuel
-			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+															 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 			//	1 litre supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	Requirement container of 1000 litre
@@ -196,7 +205,7 @@ namespace GUBSTests
 			requirement.SetSupplyLevel(SupplyLevel::RESTRICTED, 50, 0.0, 0.0, 0.0);
 			//	consider minimally supplied up to 10 litre (minimal supply 0 - 10 litre)
 			requirement.SetSupplyLevel(SupplyLevel::MINIMAL, 10, 0.0, 0.0, 0.0);
-			//	consier unsupplied up to 0 litre
+			//	consider unsupplied up to 0 litre
 			//	Unsupplied creates a 100% movement detractor (no fuel)
 			requirement.SetSupplyLevel(SupplyLevel::UNSUPPLIED, 0, 1.0, 0.0, 0.0);
 
@@ -219,11 +228,11 @@ namespace GUBSTests
 		{
 			DBUG("CreateSupplyConsumptionTest");
 			//	1 litre of diesel fuel
-			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, .43, Volume(.1, .1, .1));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+															 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
 			//	Create a consumption of diesel fuel by the liter
-			SupplyConsumption fuelConsumption((_Supply)supplyDef, MeasurementUnit::LITER);
+			SupplyConsumption fuelConsumption(( SupplyTypeDefinition) supplyDef, MeasurementUnit::LITER);
 			//	Consume 1/10000 of a litre per meter
 			fuelConsumption.AddConsumption(MeasurementUnit::METER, 0.0001, 1.0);
 			//	Consume additional 1/100000 of a litre per (meter per second)^2
@@ -231,17 +240,50 @@ namespace GUBSTests
 			//	Consume 1/10000 of a litre per second at idle
 			fuelConsumption.AddConsumption(MeasurementUnit::SECOND, 0.00001, 1.0);
 
-			std::vector<SupplyQuantity> scopeQuantity;
-			scopeQuantity.emplace_back(SupplyQuantity(supplyDef, 10));
 
-			const std::vector<UnitizedValue>& result = fuelConsumption.CalculateSupplyScope(scopeQuantity);
 
-			Assert::IsTrue(MeasurementUnit::METER == result[0].Unit);
-			Assert::AreEqual(100000.0, result[0].Value, .0001);
-			Assert::IsTrue(MeasurementUnit::METER_PER_SECOND == result[1].Unit);
-			Assert::AreEqual(1000.0, result[1].Value, .0001);
-			Assert::IsTrue(MeasurementUnit::SECOND == result[2].Unit);
-			Assert::AreEqual(1000000.0, result[2].Value, .0001);
+			//	Test copy and compare
+			SupplyConsumption testConsumption(fuelConsumption);
+			Assert::AreEqual(testConsumption.fullHash(), fuelConsumption.fullHash(), L"failed to copy consumption");
+			Assert::IsTrue(testConsumption == fuelConsumption, L"failed to compare consumption");
+
+			//	provide 10 liters of fuel
+			SupplyScopeQuestion scopeQuantity;
+			scopeQuantity.AddScopeQuestion(SupplyQuantity(supplyDef, 10));
+
+			//	determine the unit 'scopes' for 10 liters of fuel.
+			SupplyScopeQuestionAnswer result = fuelConsumption.CalculateSupplyScope(scopeQuantity);
+
+			//	Should be able to travel 100000 meters without the velocity correction.
+			SupplyScopeAnswer answer = result.GetSupplyTypeAnswer(SupplyType::POWER);
+			auto [start, end] = answer.AnswerRange();
+
+			for_each(start, end, [](const auto value)
+					 {
+						 if (MeasurementUnit::METER == value.Unit)
+						 {
+							 Assert::AreEqual(100000.0, value.Value, .0001);
+						 }
+						 else if (MeasurementUnit::METER_PER_SECOND == value.Unit)
+						 {
+							 //	because the unit consumption defines a velocity based fuel consumption
+							 //	the scope answer for velocity is returned
+							 //	this answer probably doesn't have physical meaning.  if it does it is:
+							 //	'How fast (instaneously) could the unit go, given the defined velocity dependent consumption,
+							 //	if all the fuel was consumed at once...'
+							 Assert::AreEqual(1000.0, value.Value, .0001);
+						 }
+						 //	Should be able to run at idle for 1000000 seconds
+						 else if (MeasurementUnit::SECOND == value.Unit)
+						 {
+							 Assert::AreEqual(1000000.0, value.Value, .0001);
+						 }
+						 else
+						 {
+							 Assert::Fail(L"Invalid scope answer units.");
+						 }
+
+					 });
 
 			DBUG("CreateSupplyConsumptionTest - Exit");
 		}
@@ -249,35 +291,40 @@ namespace GUBSTests
 		TEST_METHOD(CatalogLookup)
 		{
 			DBUG("CatalogLookup");
-			SupplyDefinitionCatalog catalog;
 
 			//	1 litre of diesel fuel
-			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.89, Volume(.1, .1, .1));
-			supplyDef.set_key(catalog.EnsureSupplyDefinition(supplyDef));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+															 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
 			//	1 litre of oil
-			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL - 10w40", "Engine oil, multi-weight",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef.set_key(catalog.EnsureSupplyDefinition(supplyOilDef));
-			//	1 litre of oil
-			Supply_Lubrication supplyOilDef2(0, "LUBRICATING OIL - 10w30", "Engine oil, multi-weight",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef2.set_key(catalog.EnsureSupplyDefinition(supplyOilDef2));
+			SupplyTypeDefinition supplyOilDef = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w40", "Engine oil, multi-weight", SupplyType::LUBRICATION,
+																SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
 
-			auto p = catalog.GetSupplyDef(supplyDef);
+			//	1 litre of oil
+			SupplyTypeDefinition supplyOilDef2 = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w30", "Engine oil, multi-weight", SupplyType::LUBRICATION,
+																 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
+
+			auto p = _SupplyCatalog->GetSupplyDef(supplyDef);
 
 			Assert::IsTrue(supplyDef.get_key() == p.get_key());
-			Assert::IsTrue(supplyOilDef.get_key() == catalog.GetSupplyDef(supplyOilDef).get_key());
-			Assert::IsTrue(supplyOilDef2.get_key() == catalog.GetSupplyDef(supplyOilDef2).get_key());
+			Assert::IsTrue(supplyOilDef.get_key() == _SupplyCatalog->GetSupplyDef(supplyOilDef).get_key());
+			Assert::IsTrue(supplyOilDef2.get_key() == _SupplyCatalog->GetSupplyDef(supplyOilDef2).get_key());
 
-			std::vector<_Supply> supplies = catalog.GetSupplyOfType(SupplyType::POWER);
+			std::vector<SupplyTypeDefinition> supplies = _SupplyCatalog->GetSupplyOfType(SupplyType::POWER);
 			Assert::IsTrue(supplies.size() == 1);
 			Assert::IsTrue(supplyDef.get_key() == supplies[0].get_key());
 
-			supplies = catalog.GetSupplyOfType(SupplyType::LUBRICATION);
+			supplies = _SupplyCatalog->GetSupplyOfType(SupplyType::LUBRICATION);
 			Assert::IsTrue(supplies.size() == 2);
 			Assert::IsTrue(supplyOilDef.get_key() == supplies[0].get_key());
+
+			Assert::IsTrue(_SupplyCatalog->RemoveSupplyDefinition(supplyDef.get_key()));
+
+			p = _SupplyCatalog->GetSupplyDef(supplyDef);
+			Assert::IsTrue(p.isEmptySupply());
+
+			supplies = _SupplyCatalog->GetSupplyOfType(SupplyType::POWER);
+			Assert::AreEqual(( size_t) 0, supplies.size());
 
 			DBUG("CatalogLookup - Exit");
 		}
@@ -285,47 +332,46 @@ namespace GUBSTests
 		TEST_METHOD(AddUnitSupply)
 		{
 			DBUG("AddUnitSupply");
-			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
 
 			//	1 litre of diesel fuel
-			Supply_Power supplyDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.89, Volume(.1, .1, .1));
-			supplyDef.set_key(catalog->EnsureSupplyDefinition(supplyDef));
+			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+															 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
 			//	1 litre of oil
-			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL", "Engine oil",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyOilDef));
+			SupplyTypeDefinition supplyOilDef = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w40", "Engine oil, multi-weight", SupplyType::LUBRICATION,
+																SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
 
-			UnitSupplyElement* supply = CreateFuelSupp(supplyDef);
-			supply->AddSupplyContainers(1.0);
-			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
-			oilSupply->AddSupplyContainers(1.0);
+			UnitSupplyElement supply = CreateUnitFuelSupplyElement(supplyDef);
+			supply.AddSupplyContainers(1.0);
+			UnitSupplyElement oilSupply = CreateUnitOilSupplyElement(supplyOilDef);
+			oilSupply.AddSupplyContainers(1.0);
 
-			UnitSupplyAspect unitSupply;
-			unitSupply.AddSupplyElement(supply);
-			unitSupply.AddSupplyElement(oilSupply);
+			UnitSupplyAspect unitSupplyAspect;
+			unitSupplyAspect.AddSupplyElement(supply);
+			unitSupplyAspect.AddSupplyElement(oilSupply);
 
-			std::vector<UnitizedValue> drivers;
+			//	set up supply consumption drivers
+			SupplyConsumptionQuestion drivers;
 			//	Travel 10 km
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER, 10000));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::METER, 10000));
 			//	Travel at 10 m/s => 36 km/hr
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
 			//	Travel for ~15 min
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::SECOND, 1000));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::SECOND, 1000));
 
+			//
 			int count = 0;
-			while (!unitSupply.IsDepleted(SupplyType::POWER))
+			while (!unitSupplyAspect.IsDepleted(SupplyType::POWER))
 			{
-				unitSupply.Consume(drivers);
+				SupplyConsumptionQuestionAnswer answer = unitSupplyAspect.Consume(drivers);
 				count++;
 			}
 			Assert::AreEqual(990, count);
 
-			const UnitSupplyElement* testSupply = unitSupply.GetSupplyElement(SupplyType::POWER);
+			const UnitSupplyElement* testSupply = unitSupplyAspect.GetSupplyElement(SupplyType::POWER);
 			Assert::IsTrue(testSupply->IsDepleted());
 
-			testSupply = unitSupply.GetSupplyElement(SupplyType::LUBRICATION);
+			testSupply = unitSupplyAspect.GetSupplyElement(SupplyType::LUBRICATION);
 			Assert::AreEqual(9.900, testSupply->AvailableQuantity(), 0.0001);
 
 			DBUG("AddUnitSupply - Exit");
@@ -334,65 +380,106 @@ namespace GUBSTests
 		TEST_METHOD(CheckUnitSupplyScope)
 		{
 			DBUG("CheckUnitSupplyScope");
-			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
 
 			//	1 litre of diesel fuel
-			Supply_Power supplyFuelDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.89, Volume(.1, .1, .1));
-			supplyFuelDef.set_key(catalog->EnsureSupplyDefinition(supplyFuelDef));
+			SupplyTypeDefinition supplyFuelDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+																 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
 			//	1 litre of oil
-			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL", "Engine oil",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyOilDef));
+			SupplyTypeDefinition supplyOilDef = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w40", "Engine oil, multi-weight", SupplyType::LUBRICATION,
+																SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
 
-			UnitSupplyElement* fuelSupply = CreateFuelSupp(supplyFuelDef);
-			fuelSupply->AddSupplyContainers(1.0);
-			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
-			oilSupply->AddSupplyContainers(1.0);
+			UnitSupplyElement fuelSupply = CreateUnitFuelSupplyElement(supplyFuelDef);
+			fuelSupply.AddSupplyContainers(1.0);
+			UnitSupplyElement oilSupply = CreateUnitOilSupplyElement(supplyOilDef);
+			oilSupply.AddSupplyContainers(1.0);
 
 			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(fuelSupply);
 			unitSupply.AddSupplyElement(oilSupply);
 
-			std::vector<SupplyQuantity> scopeQuestion;
+			SupplyScopeQuestion scopeQuestion;
 			//	How far will the unit travel given 1000 liters of fuel
-			scopeQuestion.emplace_back(SupplyQuantity(supplyFuelDef, 1000));
+			scopeQuestion.AddScopeQuestion(SupplyQuantity(supplyFuelDef, 1000));
 			//	with 5 litres of lubricating oil
-			scopeQuestion.emplace_back(SupplyQuantity(supplyOilDef, 5));
+			scopeQuestion.AddScopeQuestion(SupplyQuantity(supplyOilDef, 5));
 
-			std::vector<SupplyScopeAnswer> scopeResult = unitSupply.CalculateScope(scopeQuestion);
-			Assert::AreEqual((size_t)2, scopeResult.size());
+			SupplyScopeQuestionAnswer scopeResult = unitSupply.CalculateScope(scopeQuestion);
 
-			auto scopeAnswer = scopeResult[0].ScopeAnswer();
-			Assert::AreEqual((size_t)3, scopeAnswer.size());
+			SupplyScopeAnswer answer = scopeResult.GetSupplyTypeAnswer(SupplyType::POWER);
+			auto [start, end] = answer.AnswerRange();
 
-			//	total possible travel distance (without velocity correction)
-			//	10,000 km....  
-			Assert::AreEqual(10000000.0, scopeAnswer[0].Value);
-			Assert::IsTrue(scopeAnswer[0].Unit == MeasurementUnit::METER);
-			//	Physically not certain what this means.  Basically what's
-			//	the maximum velocity this unit could acquire given a velocity ^ 2
-			//	fuel consumption requirement. (about 11,257 km/hr)
-			Assert::AreEqual(3162.277, scopeAnswer[1].Value, .001);
-			Assert::IsTrue(scopeAnswer[1].Unit == MeasurementUnit::METER_PER_SECOND);
-			//	This represents the length of time the unit could sit at 'idle' 
-			//	on 1000 liters of fuel  (about 31 years)
-			Assert::AreEqual(1.00000000e+09, scopeAnswer[2].Value);
-			Assert::IsTrue(scopeAnswer[2].Unit == MeasurementUnit::SECOND);
+			int count = 0;
+			std::for_each(start, end, [& count](const auto answer)
+						  {
+							  if (answer.Unit == MeasurementUnit::METER)
+							  {
+								  //	total possible travel distance (without velocity correction)
+								  //	10,000 km....  
+								  ++count;
+								  Assert::AreEqual(10000000.0, answer.Value);
+							  }
+							  else if (answer.Unit == MeasurementUnit::METER_PER_SECOND)
+							  {
+								  //	Physically not certain what this means.  Basically what's
+								  //	the maximum velocity this unit could acquire given a velocity ^ 2
+								  //	fuel consumption requirement. (about 11,257 km/hr)
+								  ++count;
+								  Assert::AreEqual(3162.277, answer.Value, .001);
+							  }
 
+							  else if (answer.Unit == MeasurementUnit::SECOND)
+							  {
+								  //	This represents the length of time the unit could sit at 'idle' 
+								  //	on 1000 liters of fuel  (about 31 years)
 
-			scopeAnswer = scopeResult[1].ScopeAnswer();
-			Assert::AreEqual((size_t)2, scopeAnswer.size());
+								  ++count;
+								  Assert::AreEqual(1.00000000e+09, answer.Value);
+							  }
+							  else
+							  {
+								  Assert::Fail(L"Invalid scope answer units.");
+							  }
 
-			//	total possible travel distance with respect to lubricating oil
-			//	500,000 km....  
-			Assert::AreEqual(500000000.0, scopeAnswer[0].Value);
-			Assert::IsTrue(scopeAnswer[0].Unit == MeasurementUnit::METER);
-			//	This represents the length of time the unit could sit at 'idle' 
-			//	on 5 liters of oil  (about 155 years)
-			Assert::AreEqual(5.00000000e+09, scopeAnswer[1].Value);
-			Assert::IsTrue(scopeAnswer[1].Unit == MeasurementUnit::SECOND);
+						  });
+
+			Assert::IsTrue(3 == count, L"failed to find all required measurement units for power consumption");
+
+			answer = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION);
+			std::tie(start, end) = answer.AnswerRange();
+
+			UnitizedValue val = answer.GetAnswerForMeasure(MeasurementUnit::AMPERE_PER_SECOND);
+			Assert::AreEqual(0.0, val.Value, L"invalid response for answer for invalid measure.");
+
+			count = 0;
+			std::for_each(start, end, [&count](const auto answer)
+						  {
+							  if (answer.Unit == MeasurementUnit::METER)
+							  {
+								  //	total possible travel distance with respect to lubricating oil
+								  //	500,000 km....  
+								  ++count;
+								  Assert::AreEqual(500000000.0, answer.Value);
+							  }
+							  else if (answer.Unit == MeasurementUnit::SECOND)
+							  {
+								  //	This represents the length of time the unit could sit at 'idle' 
+								  //	on 5 liters of oil  (about 155 years)
+								  ++count;
+								  Assert::AreEqual(5.00000000e+09, answer.Value);
+							  }
+							  else
+							  {
+								  Assert::Fail(L"Invalid scope answer units.");
+							  }
+
+						  });
+			Assert::IsTrue(2 == count, L"failed to find all required measurement units for lubrication consumption");
+
+			answer = scopeResult.GetSupplyTypeAnswer(SupplyType::METABOLIC);
+			std::tie(start, end) = answer.AnswerRange();
+
+			Assert::IsTrue(start == end, L"invalid response for non-existent supply type");
 
 			DBUG("CheckUnitSupplyScope - Exit");
 		}
@@ -400,91 +487,115 @@ namespace GUBSTests
 		TEST_METHOD(CheckUnitSupplyCurrentScope)
 		{
 			DBUG("CheckUnitSupplyCurrentScope");
-			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
 
 			//	1 litre of diesel fuel
-			Supply_Power supplyFuelDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.89, Volume(.1, .1, .1));
-			supplyFuelDef.set_key(catalog->EnsureSupplyDefinition(supplyFuelDef));
+			SupplyTypeDefinition supplyFuelDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+																 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
 			//	1 litre of oil
-			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL", "Engine oil",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyOilDef));
+			SupplyTypeDefinition supplyOilDef = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w40", "Engine oil, multi-weight", SupplyType::LUBRICATION,
+																SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
 
-			UnitSupplyElement* fuelSupply = CreateFuelSupp(supplyFuelDef);
-			fuelSupply->AddSupplyContainers(1.0);
-			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
-			oilSupply->AddSupplyContainers(1.0);
+			UnitSupplyElement fuelSupply = CreateUnitFuelSupplyElement(supplyFuelDef);
+			fuelSupply.AddSupplyContainers(1.0);
+			UnitSupplyElement oilSupply = CreateUnitOilSupplyElement(supplyOilDef);
+			oilSupply.AddSupplyContainers(1.0);
 
 			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(fuelSupply);
 			unitSupply.AddSupplyElement(oilSupply);
 
-			std::vector<UnitizedValue> drivers;
+			SupplyConsumptionQuestion drivers;
 			//	Travel 10 km
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER, 10000));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::METER, 10000));
 			//	Travel at 10 m/s => 36 km/hr
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
 			//	Travel for ~15 min
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::SECOND, 1000));
-			std::vector<SupplyScopeAnswer> currentScope = unitSupply.CurrentScope();
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::SECOND, 1000));
+
+			SupplyScopeQuestionAnswer currentScope = unitSupply.CurrentScope();
 			int count = 0;
 			while (count < 100)
 			{
-				unitSupply.Consume(drivers);
-				const std::vector<SupplyScopeAnswer> nextScope = unitSupply.CurrentScope();
+				SupplyConsumptionQuestionAnswer answer = unitSupply.Consume(drivers);
+				SupplyScopeQuestionAnswer nextScope = unitSupply.CurrentScope();
 
-				const std::vector<UnitizedValue> lastFuelScopeAnswer = currentScope[0].ScopeAnswer();
-				const std::vector<UnitizedValue> fuelScopeAnswer = nextScope[0].ScopeAnswer();
+				SupplyScopeAnswer lastFuelScopeAnswer = currentScope.GetSupplyTypeAnswer(SupplyType::POWER);
+				SupplyScopeAnswer fuelScopeAnswer = nextScope.GetSupplyTypeAnswer(SupplyType::POWER);
 
-				auto distance = lastFuelScopeAnswer[0].Value - fuelScopeAnswer[0].Value;
+				UnitizedValue lastDistance = lastFuelScopeAnswer.GetAnswerForMeasure(MeasurementUnit::METER);
+				UnitizedValue nextDistance = fuelScopeAnswer.GetAnswerForMeasure(MeasurementUnit::METER);
+
+				Assert::IsFalse(lastDistance.IsEmptyValue());
+				Assert::IsFalse(nextDistance.IsEmptyValue());
+
+				double distance = lastDistance.Value - nextDistance.Value;
 				Assert::AreEqual(10110.0, distance, 1.0);
 				currentScope = nextScope;
 				count++;
 			}
-			const std::vector<SupplyScopeAnswer> finalScope = unitSupply.CurrentScope();
-			const std::vector<UnitizedValue> finalFuelScope = finalScope[0].ScopeAnswer();
+
+			SupplyScopeQuestionAnswer finalScope = unitSupply.CurrentScope();
+			SupplyScopeAnswer finalFuelScope = finalScope.GetSupplyTypeAnswer(SupplyType::POWER);
 
 			//	remaining distance with respect to fuel
-			Assert::AreEqual(8989000.0, finalFuelScope[0].Value, 0.01);
+			UnitizedValue finalScopeMeters = finalFuelScope.GetAnswerForMeasure(MeasurementUnit::METER);
+			Assert::AreEqual(8989000.0, finalScopeMeters.Value, 0.01);
 			//	remaining time with respect to fuel
-			Assert::AreEqual(898900000.0, finalFuelScope[2].Value, 0.01);
+			UnitizedValue finalScopeTime = finalFuelScope.GetAnswerForMeasure(MeasurementUnit::SECOND);
+			Assert::AreEqual(898900000.0, finalScopeTime.Value, 0.01);
 
 			DBUG("CheckUnitSupplyCurrentScope - Exit");
+		}
+
+		TEST_METHOD(ConsumptionDefinitionTests)
+		{
+			DBUG("ConsumptionDefinitionTests");
+			//	1 litre of diesel fuel
+			SupplyTypeDefinition supplyFuelDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+																			  SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
+			UnitSupplyElement fuelSupply = CreateUnitFuelSupplyElement(supplyFuelDef);
+
+			SupplyConsumptionQuestion drivers;
+			//	add a driver that the unit does not consume
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::AMPERE, 10000));
+
+			UnitSupplyAspect unitSupply;
+			unitSupply.AddSupplyElement(fuelSupply);
+			SupplyConsumptionQuestionAnswer answer = unitSupply.Consume(drivers);
+			auto typeAnswer = answer.GetSupplyTypeAnswer(fuelSupply.SupplyType()); 
+			auto fuelAnswer = *(typeAnswer.AnswerRange().first);
+			Assert::IsTrue(fuelAnswer.Quantity() == 0.000);
+			Assert::IsTrue(fuelAnswer.GetSupplyDef().SupplyUnit() == MeasurementUnit::LITER);
 		}
 
 		TEST_METHOD(CheckUnitSupplyLevel)
 		{
 			DBUG("CheckUnitSupplyLevel");
-			std::unique_ptr<SupplyDefinitionCatalog> catalog = std::make_unique<SupplyDefinitionCatalog>();
-
 			//	1 litre of diesel fuel
-			Supply_Power supplyFuelDef(0, "DIESEL", "Liquid Diesel Fuel",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.89, Volume(.1, .1, .1));
-			supplyFuelDef.set_key(catalog->EnsureSupplyDefinition(supplyFuelDef));
+			SupplyTypeDefinition supplyFuelDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
+																 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
 			//	1 litre of oil
-			Supply_Lubrication supplyOilDef(0, "LUBRICATING OIL", "Engine oil",
-				SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
-			supplyOilDef.set_key(catalog->EnsureSupplyDefinition(supplyOilDef));
+			SupplyTypeDefinition supplyOilDef = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w40", "Engine oil, multi-weight", SupplyType::LUBRICATION,
+																SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
 
-			UnitSupplyElement* fuelSupply = CreateFuelSupp(supplyFuelDef);
-			fuelSupply->AddSupplyContainers(1.0);
-			UnitSupplyElement* oilSupply = CreateOilSupp(supplyOilDef);
-			oilSupply->AddSupplyContainers(1.0);
+			UnitSupplyElement fuelSupply = CreateUnitFuelSupplyElement(supplyFuelDef);
+			fuelSupply.AddSupplyContainers(1.0);
+			UnitSupplyElement oilSupply = CreateUnitOilSupplyElement(supplyOilDef);
+			oilSupply.AddSupplyContainers(1.0);
 
 			UnitSupplyAspect unitSupply;
 			unitSupply.AddSupplyElement(fuelSupply);
 			unitSupply.AddSupplyElement(oilSupply);
-
-			std::vector<UnitizedValue> drivers;
+ 
+			SupplyConsumptionQuestion drivers;
 			//	Travel 10 km
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER, 10000));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::METER, 10000));
 			//	Travel at 10 m/s => 36 km/hr
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::METER_PER_SECOND, 10));
 			//	Travel for ~15 min
-			drivers.emplace_back(UnitizedValue(MeasurementUnit::SECOND, 1000));
+			drivers.AddConsumptionDriver(UnitizedValue(MeasurementUnit::SECOND, 1000));
 
 			int count = 0;
 
@@ -492,25 +603,25 @@ namespace GUBSTests
 
 			while (!unitSupply.IsDepleted(SupplyType::POWER))
 			{
-				unitSupply.Consume(drivers);
+				SupplyConsumptionQuestionAnswer answer = unitSupply.Consume(drivers);
 				auto latestLevels = unitSupply.CurrentSupplyLevels();
 
-				auto latestFuelLevelAnswer = latestLevels[0].SupplyAnswer();
-				auto currentFuelLevelAnswer = currentLevels[0].SupplyAnswer();
+				auto latestFuelLevelAnswer = latestLevels.GetSupplyLevelForType(SupplyType::POWER);
+				auto currentFuelLevelAnswer = currentLevels.GetSupplyLevelForType(SupplyType::POWER);
 
-				if (latestFuelLevelAnswer != currentFuelLevelAnswer)
+				if (latestFuelLevelAnswer.Level() != currentFuelLevelAnswer.Level())
 				{
-					if (currentFuelLevelAnswer == SupplyLevel::SUPPLIED && latestFuelLevelAnswer == SupplyLevel::RESTRICTED)
+					if (currentFuelLevelAnswer.Level() == SupplyLevel::SUPPLIED && latestFuelLevelAnswer.Level() == SupplyLevel::RESTRICTED)
 					{
 						Assert::AreEqual(890, count);
 					}
-					else if (currentFuelLevelAnswer == SupplyLevel::RESTRICTED && latestFuelLevelAnswer == SupplyLevel::MINIMAL)
+					else if (currentFuelLevelAnswer.Level() == SupplyLevel::RESTRICTED && latestFuelLevelAnswer.Level() == SupplyLevel::MINIMAL)
 					{
 						Assert::AreEqual(939, count);
 					}
-					else if (currentFuelLevelAnswer == SupplyLevel::MINIMAL && latestFuelLevelAnswer == SupplyLevel::UNSUPPLIED)
+					else if (currentFuelLevelAnswer.Level() == SupplyLevel::MINIMAL && latestFuelLevelAnswer.Level() == SupplyLevel::UNSUPPLIED)
 					{
-						Assert::AreEqual(979, count);
+						Assert::AreEqual(988, count);
 					}
 
 					currentLevels = latestLevels;
@@ -519,93 +630,111 @@ namespace GUBSTests
 				count++;
 			}
 
-			auto lastFuelLevelAnswer = unitSupply.CurrentSupplyLevels()[0].SupplyAnswer();
+			auto lastFuelLevelAnswer = unitSupply.CurrentSupplyLevels().GetSupplyLevelForType(SupplyType::POWER).Level();
 
 			Assert::IsTrue(SupplyLevel::UNSUPPLIED == lastFuelLevelAnswer);
 
 			auto finalScope = unitSupply.CurrentScope();
-			auto finalFuelScope = finalScope[0];
+			auto finalFuelScope = finalScope.GetSupplyTypeAnswer(SupplyType::POWER);
 			//	Check the fuel level scopes, they should be all zero as there
 			//	shouldn't be any fuel.
-			Assert::AreEqual(0.0, finalFuelScope.ScopeAnswer()[0].Value);
-			Assert::AreEqual(0.0, finalFuelScope.ScopeAnswer()[1].Value);
-			Assert::AreEqual(0.0, finalFuelScope.ScopeAnswer()[2].Value);
+			UnitizedValue value = finalFuelScope.GetAnswerForMeasure(MeasurementUnit::METER);
+			Assert::IsFalse(value.IsEmptyValue());
+			Assert::AreEqual(0.0, value.Value);
+
+			value = finalFuelScope.GetAnswerForMeasure(MeasurementUnit::METER_PER_SECOND);
+			Assert::IsFalse(value.IsEmptyValue());
+			Assert::AreEqual(0.0, value.Value);
+			
+			value = finalFuelScope.GetAnswerForMeasure(MeasurementUnit::SECOND);
+			Assert::IsFalse(value.IsEmptyValue());
+			Assert::AreEqual(0.0, value.Value);
 
 			DBUG("CheckUnitSupplyLevel - Exit");
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		UnitSupplyElement* CreateFuelSupp(const _Supply & supplyDef)
+		//	the unit fuel supply element is defined as 1000 liters in a rigid container
+		//	it is consumed at 1 liter/10 km base with a velocity dependent
+		//	consumption of 1/10000 liter times the square of the velocity
+		//	and 1/100000 of a liter per second of run time (to account for idle consumption)
+		UnitSupplyElement CreateUnitFuelSupplyElement(const SupplyTypeDefinition & supplyDef)
 		{
 			//	take the supplyDef and consume it in units of LITERS
-			UnitSupplyElement* unitSupply = new UnitSupplyElement(supplyDef, MeasurementUnit::LITER);
+			UnitSupplyElement unitSupply(supplyDef, MeasurementUnit::LITER);
 
 			//	1 litre supply quantity
 			//	Requirement container of 1000 x 1 litre supply quantity (1000 litre)
-			unitSupply->IntializeRequirementContainer(1.0, SupplyContainerType::RIGID, 1000.0);
+			unitSupply.IntializeRequirementContainer(1.0, SupplyContainerType::RIGID, 1000.0);
 			//	Consume 1/10000 of a litre per meter
-			unitSupply->AddConsumption(MeasurementUnit::METER, 0.0001, 1.0);
-			//	Consume 1/10000 of a litre per (meter per second) ^ 2
-			unitSupply->AddConsumption(MeasurementUnit::METER_PER_SECOND, 0.0001, 2.0);
+			unitSupply.AddConsumption(MeasurementUnit::METER, 0.0001, 1.0);
+			//	Consume an additional 1/10000 of a litre per (meter per second) ^ 2
+			unitSupply.AddConsumption(MeasurementUnit::METER_PER_SECOND, 0.0001, 2.0);
 			//	Consume 1/100000 of a litre per second
-			unitSupply->AddConsumption(MeasurementUnit::SECOND, 0.000001, 1.0);
+			unitSupply.AddConsumption(MeasurementUnit::SECOND, 0.000001, 1.0);
 			SetDieselFuelRequirements(unitSupply);
 
 			return unitSupply;
 		}
 
-		UnitSupplyElement* CreateOilSupp(const _Supply & supplyDef)
+
+		//	unit lubricating oil supply element is defined a 10 liters in a rigid container
+		//	it is consumed at 1/100000000 of a litre per meter
+		//	and 1/1000000000 of a litre per second of run time
+		UnitSupplyElement CreateUnitOilSupplyElement(const SupplyTypeDefinition & supplyDef)
 		{
-			UnitSupplyElement* unitSupply = new UnitSupplyElement(supplyDef, MeasurementUnit::LITER);
+			UnitSupplyElement unitSupply(supplyDef, MeasurementUnit::LITER);
 
 			//	1 litre supply quantity
 			//	Requirement container of 10 x 1 litre supply quantity (10 litre)
-			unitSupply->IntializeRequirementContainer(1.0, SupplyContainerType::RIGID, 10.0);
+			unitSupply.IntializeRequirementContainer(1.0, SupplyContainerType::RIGID, 10.0);
 			//	Consume 1/100000000 of a litre per meter
-			unitSupply->AddConsumption(MeasurementUnit::METER, 0.00000001, 1.0);
+			unitSupply.AddConsumption(MeasurementUnit::METER, 0.00000001, 1.0);
 			//	Consume 1/1000000000 of a litre per second
-			unitSupply->AddConsumption(MeasurementUnit::SECOND, 0.000000001, 1.0);
+			unitSupply.AddConsumption(MeasurementUnit::SECOND, 0.000000001, 1.0);
 			SetLubOilRequirements(unitSupply);
 
 			return unitSupply;
 		}
 
-		void SetDieselFuelRequirements(GUBS_Supply::UnitSupplyElement * unitSupply)
+		void SetDieselFuelRequirements(UnitSupplyElement& unitSupply)
 		{
 			//	Full, restricted and minimal supply levels are indicated but have no detractors
-			//	consider fully supplied up to 1000 litre (Fully supplied 50 - 1000 litre)
-			unitSupply->SetSupplyLevel(SupplyLevel::SUPPLIED, 100, 0.0, 0.0, 0.0);
-			//	consider restricted supply up to 50 litre (restricted supply 10 - 50 litre)
-			unitSupply->SetSupplyLevel(SupplyLevel::RESTRICTED, 50, 0.0, 0.0, 0.0);
-			//	consider minimally supplied up to 10 litre (minimal supply 0 - 10 litre)
-			unitSupply->SetSupplyLevel(SupplyLevel::MINIMAL, 10, 0.0, 0.0, 0.0);
-			//	consier unsupplied up to 0 litre
+			//	consider fully supplied up to 1000 litre (Fully supplied over 100 litre)
+			unitSupply.SetSupplyLevel(SupplyLevel::SUPPLIED, 100, 0.0, 0.0, 0.0);
+			//	consider restricted supply up to 50 litre (restricted supply 50 - 100 litre)
+			unitSupply.SetSupplyLevel(SupplyLevel::RESTRICTED, 50, 0.0, 0.0, 0.0);
+			//	consider minimally supplied up to 0 litre (minimal supply 0 - 50 litre)
+			unitSupply.SetSupplyLevel(SupplyLevel::MINIMAL, 1.0, 0.0, 0.0, 0.0);
+			//	consider unsupplied below 0 litre
 			//	Unsupplied creates a 100% movement detractor (no fuel)
-			unitSupply->SetSupplyLevel(SupplyLevel::UNSUPPLIED, 0, 1.0, 0.0, 0.0);
+			unitSupply.SetSupplyLevel(SupplyLevel::UNSUPPLIED, 0, 1.0, 0.0, 0.0);
 
 			//	The result of running out of fuel, requiring resupply, occurs 0 seconds after supply is exhausted
-			unitSupply->SetUnsuppliedOutcome(UnsuppliedOutcome::REQUIRES_RESUPPLY, 0, MeasurementUnit::SECOND);
+			unitSupply.SetUnsuppliedOutcome(UnsuppliedOutcome::REQUIRES_RESUPPLY, 0, MeasurementUnit::SECOND);
 		}
 
-		void SetLubOilRequirements(GUBS_Supply::UnitSupplyElement * unitSupply)
+		void SetLubOilRequirements(UnitSupplyElement& unitSupply)
 		{
 			//	Full, restricted and minimal supply levels are indicated but have no detractors
-			//	consider fully supplied up to 10 litre (Fully supplied 2 - 10 litre)
-			unitSupply->SetSupplyLevel(SupplyLevel::SUPPLIED, 5, 0.0, 0.0, 0.0);
+			//	consider fully supplied up to 10 litre (Fully supplied over 5 litre)
+			unitSupply.SetSupplyLevel(SupplyLevel::SUPPLIED, 5, 0.0, 0.0, 0.0);
 			//	consider restricted supply up to 2 litre (restricted supply 1 - 2 litre)
-			unitSupply->SetSupplyLevel(SupplyLevel::RESTRICTED, 2, 0.0, 0.0, 0.0);
-			//	consider minimally supplied up to 1 litre (minimal supply 0 - 1 litre)
-			unitSupply->SetSupplyLevel(SupplyLevel::MINIMAL, 1, 0.0, 0.0, 0.0);
-			//	consier unsupplied up to 0 litre
+			unitSupply.SetSupplyLevel(SupplyLevel::RESTRICTED, 2, 0.0, 0.0, 0.0);
+			//	consider minimally supplied up to 1 litre (minimal supply 0.5 - 1 litre)
+			unitSupply.SetSupplyLevel(SupplyLevel::MINIMAL, 1, 0.50, 0.0, 0.0);
+			//	consider unsupplied up to 0 litre
 			//	Unsupplied creates a 100% movement detractor (no oil)
-			unitSupply->SetSupplyLevel(SupplyLevel::UNSUPPLIED, 0, 1.0, 0.0, 0.0);
+			unitSupply.SetSupplyLevel(SupplyLevel::UNSUPPLIED, 0.5, 1.0, 0.0, 0.0);
 
 			//	The result of running out of oil, requiring resupply and repair, occurs 60 seconds after supply is exhausted
 			UnsuppliedOutcome result = UnsuppliedOutcome::REQUIRES_RESUPPLY | UnsuppliedOutcome::REQUIRES_REPAIR;
 			bool res = hasFlag(result, UnsuppliedOutcome::REQUIRES_REPAIR);
-			unitSupply->SetUnsuppliedOutcome(result, 60, MeasurementUnit::SECOND);
+			unitSupply.SetUnsuppliedOutcome(result, 60, MeasurementUnit::SECOND);
 		}
 
 	};
+
+
 }

@@ -75,18 +75,6 @@
     <ClInclude Include="SupportClasses\infrastructure.h">
       <Filter>Header Files\Infrastructure</Filter>
     </ClInclude>
-    <ClInclude Include="Supply\SupplyTypes\Supply_Ammunition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Supply\SupplyTypes\Supply_Power.h">
-      <Filter>Header Files\Supply\SupplyTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="Supply\SupplyTypes\Supply.h">
-      <Filter>Header Files\Supply</Filter>
-    </ClInclude>
-    <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Supply\ConsumptionDefinition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -116,6 +104,27 @@
     </ClInclude>
     <ClInclude Include="UnitState\UnitState.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyScopeQuestion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyConsumptionQuestion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyConsumptionAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyScopeQuestionAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyConsumptionQuestionAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyLevelQuestionAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Supply\SupplyTypes\SupplyTypeDefinition.h">
+      <Filter>Header Files\Supply</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -155,17 +164,8 @@
     <ClCompile Include="Supply\Source\UnitSupplyElement.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Ammunition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Power.cpp">
-      <Filter>Source Files\Supply\SupplyTypes</Filter>
-    </ClCompile>
     <ClCompile Include="Supply\Source\SupplyTypes\Supply.cpp">
       <Filter>Source Files\Supply</Filter>
-    </ClCompile>
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Lubrication.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Propulsion\Source\UnitPropulsionElement.cpp">
       <Filter>Source Files</Filter>

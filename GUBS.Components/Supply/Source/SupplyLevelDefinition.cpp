@@ -8,9 +8,6 @@ namespace GUBS_Supply
 	{
 	}
 
-	SupplyLevelDefinition::SupplyLevelDefinition(const SupplyLevelDefinition & lvl) : SupplyLevelDefinition(lvl._Level, lvl._RequiredSupplyLevel, lvl._Detractor)
-	{
-	}
 
 	SupplyLevelDefinition::SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, GUBS_UnitAspects::ActionDetractor detractor)
 		: SupplyLevelDefinition(lvl, requiredSupplyLevel, detractor._Movement, detractor._Attack, detractor._Defense)
@@ -25,6 +22,6 @@ namespace GUBS_Supply
 	}
 
 	//	Is the supplysQuantity enough to satisfy this supply level definition
-	bool SupplyLevelDefinition::Supplied(double supplyQuantity) { return supplyQuantity >= _RequiredSupplyLevel; }
+	bool SupplyLevelDefinition::Supplied(double supplyQuantity) const { return supplyQuantity >= _RequiredSupplyLevel; }
 	
 }

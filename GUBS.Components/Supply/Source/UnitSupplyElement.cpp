@@ -4,39 +4,39 @@
 #include <memory>
 
 #include "Supply\UnitSupplyElement.h"
-#include "Supply\SupplyTypes\Supply.h"
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h"
 
 
 
 namespace GUBS_Supply
 {
 
-	UnitizedValue UnitSupplyElement::Consume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
+	UnitizedValue UnitSupplyElement::Consume(SupplyConsumptionQuestion  consumptionDriverAmounts)
 	{
 		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
 		double requiredAmount = _SupplyQuantity.ForceDeplete(consumption.Value);
-		return UnitizedValue(_SupplyQuantity.SupplyUnits(), requiredAmount);
+		return UnitizedValue(_SupplyQuantity.GetSupplyDef().SupplyUnit(), requiredAmount);
 	}
 
-	bool UnitSupplyElement::TryConsume(const std::vector<UnitizedValue>&  consumptionDriverAmounts)
+	bool UnitSupplyElement::TryConsume(SupplyConsumptionQuestion consumptionDriverAmounts)
 	{
 		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
 		return _SupplyQuantity.TryDeplete(consumption.Value);
 	}
 
-	UnitizedValue UnitSupplyElement::CalculateConsumption(const std::vector<SupplyQuantity>&  consumptionDriverAmounts) const
+	UnitizedValue UnitSupplyElement::CalculateConsumption(SupplyConsumptionQuestion consumptionDriverAmounts) const
 	{
 		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
 		return consumption;
 	}
 
-	SupplyLevel UnitSupplyElement::DetermineSupplyLevelFromDrivers(const std::vector<SupplyQuantity>& consumptionDriverAmounts) const
+	SupplyLevel UnitSupplyElement::DetermineSupplyLevelFromDrivers(SupplyConsumptionQuestion consumptionDriverAmounts) const
 	{
 		UnitizedValue consumption = CalculateConsumption(consumptionDriverAmounts);
 		return SupplyRequirement::DetermineSupplyLevel(consumption.Value);
 	}
 
-	std::vector<UnitizedValue>  UnitSupplyElement::CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const
+	SupplyScopeQuestionAnswer  UnitSupplyElement::CalculateSupplyScope(const SupplyScopeQuestion&  consumption) const
 	{
 		return _Consumption.CalculateSupplyScope(consumption);
 	}
@@ -53,7 +53,7 @@ namespace GUBS_Supply
 
 	void UnitSupplyElement::AddSupplyContainers(double containers)
 	{
-		_SupplyQuantity.Add(containers * this->_InnerCount);
+		_SupplyQuantity.Add(containers * _SupplyContainer.GetInnerCount() );
 	}
 
 	double UnitSupplyElement::AvailableQuantity() const
@@ -63,7 +63,7 @@ namespace GUBS_Supply
 
 	unsigned long UnitSupplyElement::hash() const
 	{
-		return get_key();
+		return _SupplyContainer.get_key();
 	}
 
 }

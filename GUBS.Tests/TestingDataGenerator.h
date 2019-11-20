@@ -5,7 +5,7 @@
 #include "logog.hpp"
 
 #include "UnitAspects\ActionDetractor.h"
-#include "Supply\SupplyTypes\Supply.h"
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h"
 #include "Supply\SupplyConsumer.h"
 #include "Supply\SupplyConsumption.h"
 #include "Supply\SupplyContainer.h"

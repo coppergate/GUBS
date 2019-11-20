@@ -16,24 +16,30 @@ namespace GUBS_Supply
 	class SupplyContainer : virtual protected SupplyQuantity
 	{
 	protected:
-		SupplyContainerType _ContainerType;
-		double _InnerCount;
+		SupplyContainerType _ContainerType = SupplyContainerType::NONE;
+		double _InnerCount = 0;
 
 		unique_ptr<SupplyContainer> _InnerContainer;
 
 	public:
 
-		SupplyContainer();
-
-		SupplyContainer(const _Supply& supplyDef);
+		SupplyContainer(SupplyTypeDefinition supplyDef);
 		SupplyContainer(const SupplyContainer& container);
 
-		SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, double containerQuantity);
-		SupplyContainer(const SupplyQuantity& supply, const SupplyContainerType containerType, double containerQuantity, const SupplyContainer& innerContainer);
+		SupplyContainer(SupplyQuantity supply, SupplyContainerType containerType, double containerQuantity);
+		SupplyContainer(SupplyQuantity supply, SupplyContainerType containerType, double containerQuantity, SupplyContainer innerContainer);
 
-		virtual ~SupplyContainer() {}
+		SupplyContainer() = default;
+		virtual ~SupplyContainer() = default;							// destructor (virtual if SupplyContainer is meant to be a base class)
+		SupplyContainer(SupplyContainer&&) = default;					// move constructor
+		SupplyContainer& operator=(const SupplyContainer&) = default;	// copy assignment
+		SupplyContainer& operator=(SupplyContainer&&) = default;		// move assignment
 
-		SupplyContainerType getContainerType() const { return _ContainerType; }
+		SupplyContainerType getContainerType() const
+		{
+			return _ContainerType;
+		}
+
 		double getContainerQuantity() const
 		{
 			return getInnerContainerCount() * _Quantity;
@@ -47,14 +53,35 @@ namespace GUBS_Supply
 			return innerCount * _InnerCount;
 		}
 
+		double GetInnerCount() const
+		{
+			return _InnerCount;
+		}
+
+		long get_key() const
+		{
+			return _Supply.get_key();
+		}
+
 		void Add(double quantity)
 		{
 			SupplyQuantity::Add(quantity);
 		}
 
-		double Quantity() const { return _Quantity; }
-		const _Supply& GetSupplyDef() const { return *this; }
-		bool IsDepleted() const { return _Quantity == 0; }
+		double Quantity() const
+		{
+			return _Quantity;
+		}
+
+		SupplyTypeDefinition GetSupplyDef() const
+		{
+			return this->GetSupplyDef();
+		}
+
+		bool IsDepleted() const
+		{
+			return _Quantity == 0;
+		}
 
 		bool TryDeplete(double quantity)
 		{
@@ -67,6 +94,22 @@ namespace GUBS_Supply
 			double containerQuantity = getTopLevelContainerQuantityFromSupplyQuantity(quantity);
 			return getInnerContainerQuantity() * _InnerCount * SupplyQuantity::ForceDeplete(containerQuantity);
 		}
+
+		void SetQuantity(double supplyUnitQuantity)
+		{
+			_Quantity = supplyUnitQuantity;
+		}
+
+		void SetContainerType(SupplyContainerType  containerType)
+		{
+			_ContainerType = containerType;
+		}
+
+		void SetContainerInnerCount(double containerQuantity)
+		{
+			_InnerCount = containerQuantity;
+		}
+
 
 	protected:
 		double getInnerContainerQuantity() const

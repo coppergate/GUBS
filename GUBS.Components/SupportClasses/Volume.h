@@ -15,14 +15,16 @@ namespace GUBS_Support
 
 	public:
 
-		Volume() : Volume(0, 0, 0) {}
 
 		Volume(double h, double w, double l) : _Height(h), _Width(w), _Length(l)
-		{
+		{	}
 
-		}
-
-		Volume(const Volume& vol) = default;
+		Volume() = default;
+		virtual ~Volume() = default;						// destructor (virtual if Volume is meant to be a base class)
+		Volume(const Volume&) = default;			// copy constructor
+		Volume(Volume&&) = default;					// move constructor
+		Volume& operator=(const Volume&) = default;	// copy assignment
+		Volume& operator=(Volume&&) = default;		// move assignment
 
 		operator double() const
 		{

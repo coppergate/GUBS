@@ -10,9 +10,9 @@ namespace GUBS_Supply
 
 	}
 
-	GUBS_UnitAspects::ActionDetractor& SupplyConsumer::GetCurrentActionDetractor()
+	GUBS_UnitAspects::ActionDetractor SupplyConsumer::GetCurrentActionDetractor()
 	{//	Just for compile sake.
-		return *(new GUBS_UnitAspects::ActionDetractor(0, 0, 0));
+		return  GUBS_UnitAspects::ActionDetractor(0, 0, 0);
 	}
 
 }

@@ -2,7 +2,7 @@
 
 #include "logog.hpp"
 
-#include "Supply\SupplyTypes\Supply.h"
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h"
 
 #include <string>
 #include <functional>
@@ -10,31 +10,26 @@
 namespace GUBS_Supply
 {
 
-	const _Supply _Supply::EmptySupply;
+	const SupplyTypeDefinition SupplyTypeDefinition::EmptySupply;
 
-	_Supply::_Supply()
-		: _Supply(0, "", "", SupplyType::NONE, SupplySubType::NONE, MeasurementUnit::NONE, 0, Volume())
+	SupplyTypeDefinition::SupplyTypeDefinition(unsigned long key, const SupplyTypeDefinition& def)
+		: SupplyTypeDefinition(key, def._Name, def._Description, def._Type, def._SubType, def._Unit, def._MassPer, def._VolumePer)
 	{
 	}
 
-	_Supply::_Supply(unsigned long key, const _Supply& def)
-		: _Supply(key, def._Name, def._Description, def._Type, def._SubType, def._Units, def._MassPerUnit, def._VolumePerUnit)
+	SupplyTypeDefinition::SupplyTypeDefinition(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer)
+		: _Id(id), _Name(supplyName), _Description(description), _Type(type), _SubType(subType), _Unit(unit), _MassPer(massPer), _VolumePer(volumePer)
 	{
 	}
 
-	_Supply::_Supply(unsigned long id, const std::string& supplyName, const std::string& description, SupplyType type, SupplySubType subType, MeasurementUnit unit, double massPer, const Volume& volumePer)
-		: _Id(id), _Name(supplyName), _Description(description), _Type(type), _SubType(subType), _Units(unit), _MassPerUnit(massPer), _VolumePerUnit(volumePer)
-	{
-	}
-
-	unsigned long _Supply::typeHash() const
+	unsigned long SupplyTypeDefinition::typeHash() const
 	{
 		return typeHash(_Name, _Type);
 	}
 
 	using GUBS_Enums::EnumClassHash;
 
-	unsigned long _Supply::typeHash(const std::string& name, SupplyType type)
+	unsigned long SupplyTypeDefinition::typeHash(const std::string& name, SupplyType type)
 	{
 		EnumClassHash enumHash;
 		std::hash<std::string> stringHash;
@@ -42,23 +37,23 @@ namespace GUBS_Supply
 		return ret;
 	}
 
-	unsigned long _Supply::fullHash() const
+	unsigned long SupplyTypeDefinition::fullHash() const
 	{
 		std::hash<double> floatHash;
 		EnumClassHash enumHash;
 
 		unsigned long ret = (long)typeHash() << 24
 			^ (long)enumHash(_SubType) << 12
-			^ (long)enumHash(_Units) << 8
-			^ (long)floatHash(_MassPerUnit) << 4
-			^ (long)floatHash(static_cast<double>(_VolumePerUnit));
+			^ (long)enumHash(_Unit) << 8
+			^ (long)floatHash(_MassPer) << 4
+			^ (long)floatHash(static_cast<double>(_VolumePer));
 
 		return ret;
 	}
 
 }
 
-std::size_t std::hash<GUBS_Supply::_Supply>::operator()(const GUBS_Supply::_Supply& inDef) const
+std::size_t std::hash<GUBS_Supply::SupplyTypeDefinition>::operator()(const GUBS_Supply::SupplyTypeDefinition& inDef) const
 {
 	return inDef.get_key();
 }

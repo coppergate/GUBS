@@ -1,11 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUBS", "GUBS\GUBS.vcxproj", "{4255AAC3-5B2A-4FAA-A2AB-F0ADB322CAD9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E279CE91-159D-48F1-859E-EB74045FBD73} = {E279CE91-159D-48F1-859E-EB74045FBD73}
+		{605CB1D5-0BD3-4937-A983-1100B6554592} = {605CB1D5-0BD3-4937-A983-1100B6554592}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUBS.Components", "GUBS.Components\GUBS.Components.vcxproj", "{605CB1D5-0BD3-4937-A983-1100B6554592}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E279CE91-159D-48F1-859E-EB74045FBD73} = {E279CE91-159D-48F1-859E-EB74045FBD73}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUBS.Tests", "GUBS.Tests\GUBS.Tests.vcxproj", "{2B6378B6-BC63-458B-8E77-AB488257BFF8}"
 EndProject

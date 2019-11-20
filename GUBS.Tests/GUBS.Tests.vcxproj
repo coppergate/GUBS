@@ -98,6 +98,7 @@
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;D:\GUBS\GUBS.Components\SupportClasses;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components;D:\ExternalCode\logog\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -118,6 +119,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>D:\GUBS\x64\Debug;$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -176,6 +178,9 @@
     <ProjectReference Include="..\GUBS.Components\GUBS.Components.vcxproj">
       <Project>{605cb1d5-0bd3-4937-a983-1100b6554592}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,7 +2,7 @@
 
 
 #include "SupportClasses\infrastructure.h"
-#include "Supply\SupplyTypes\Supply.h" 
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h" 
 #include "SupportClasses\UnitizedValue.h"
 
 
@@ -10,19 +10,39 @@ namespace GUBS_Supply
 {
 	using GUBS_Enums::SupplyLevel;
 
-	class SupplyLevelAnswer : public _Supply
+	class SupplyLevelAnswer : public SupplyTypeDefinition
 	{
-		SupplyLevel _AnswerSupplyLevel;
+		SupplyLevel _AnswerSupplyLevel = SupplyLevel::NONE;
+
 	public:
 
-		SupplyLevelAnswer(const _Supply* supply, SupplyLevel answer)
-			: _Supply(*supply), _AnswerSupplyLevel(answer)
+		SupplyLevelAnswer(const SupplyTypeDefinition& supply, SupplyLevel answer)
+			: SupplyTypeDefinition(supply), _AnswerSupplyLevel(answer)
 		{
 			DBUG("SupplyLevelAnswer");
 		}
 
-		const SupplyLevel SupplyAnswer() const { return _AnswerSupplyLevel; }
-		void SetSupplyAnswer(SupplyLevel value) { _AnswerSupplyLevel = value; }
+		SupplyLevelAnswer() = default;
+		virtual ~SupplyLevelAnswer() = default;									// destructor (virtual if SupplyLevelAnswer is meant to be a base class)
+		SupplyLevelAnswer(const SupplyLevelAnswer&) = default;				// copy constructor
+		SupplyLevelAnswer(SupplyLevelAnswer&&) = default;					// move constructor
+		SupplyLevelAnswer& operator=(const SupplyLevelAnswer&) = default;	// copy assignment
+		SupplyLevelAnswer& operator=(SupplyLevelAnswer&&) = default;		// move assignment
+
+		SupplyLevel Level() const
+		{
+			return _AnswerSupplyLevel;
+		}
+
+		void SetSupplyAnswer(SupplyLevel value)
+		{
+			_AnswerSupplyLevel = value;
+		}
+
+		SupplyType SupplyLevelSupplyType() const
+		{
+			return get_type();
+		}
 	};
 
 }

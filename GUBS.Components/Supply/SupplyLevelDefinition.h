@@ -25,27 +25,31 @@ namespace GUBS_Supply
 
 		SupplyLevelDefinition(SupplyLevel lvl);
 
-		SupplyLevelDefinition(const SupplyLevelDefinition& lvl);
 
 		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, GUBS_UnitAspects::ActionDetractor detractor);
 
 		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, double moveDetractor, double attDetractor, double defDetractor);
 
 		SupplyLevelDefinition() = delete;
+		virtual ~SupplyLevelDefinition() = default;									// destructor (virtual if SupplyLevelDefinition is meant to be a base class)
+		SupplyLevelDefinition(const SupplyLevelDefinition&) = default;
+		SupplyLevelDefinition(SupplyLevelDefinition&&) = default;					// move constructor
+		SupplyLevelDefinition& operator=(const SupplyLevelDefinition&) = default;	// copy assignment
+		SupplyLevelDefinition& operator=(SupplyLevelDefinition&&) = default;		// move assignment
+		
+		bool Supplied(double currentSupply) const;
 
-		bool Supplied(double currentSupply);
-
-		const SupplyLevel GetSupplyLevel() const
+		SupplyLevel GetSupplyLevel() const
 		{
 			return _Level;
 		}
 
-		const double GetRequiredLevel() const
+		double GetRequiredLevel() const
 		{
 			return _RequiredSupplyLevel;
 		}
 
-		const GUBS_UnitAspects::ActionDetractor& GetActionDetractor() const
+		GUBS_UnitAspects::ActionDetractor GetActionDetractor() const
 		{
 			return _Detractor;
 		}
@@ -53,5 +57,5 @@ namespace GUBS_Supply
 
 	};
 
-	typedef std::vector<std::unique_ptr<SupplyLevelDefinition>> SupplyLevelList;
+	typedef std::vector<SupplyLevelDefinition> SupplyLevelList;
 }

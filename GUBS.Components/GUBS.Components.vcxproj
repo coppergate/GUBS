@@ -79,6 +79,8 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <LibraryPath>D:\GUBS\GUBS.Components\x64\Debug;$(LibraryPath)</LibraryPath>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -99,6 +101,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;D:\GUBS\GUBS.Components\Supply;D:\GUBS\GUBS.Components\Supply\SupplyTypes;D:\GUBS\GUBS.Components\SupportClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -115,6 +118,7 @@
       <PreprocessorDefinitions>_DEBUG;GUBSCOMPONENTS_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\ExternalCode\logog\include;D:\GUBS\GUBS.Components;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -169,12 +173,16 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Supply\SupplyLevelQuestionAnswer.h" />
+    <ClInclude Include="Supply\SupplyConsumptionAnswer.h" />
+    <ClInclude Include="Supply\SupplyConsumptionQuestion.h" />
+    <ClInclude Include="Supply\SupplyConsumptionQuestionAnswer.h" />
+    <ClInclude Include="Supply\SupplyScopeQuestion.h" />
+    <ClInclude Include="Supply\SupplyScopeQuestionAnswer.h" />
     <ClInclude Include="UnitAspects\ActionDetractor.h" />
     <ClInclude Include="Supply\SupplyLevelAnswer.h" />
     <ClInclude Include="Supply\SupplyScopeAnswer.h" />
     <ClInclude Include="Supply\ConsumptionDefinition.h" />
-    <ClInclude Include="Supply\SupplyTypes\Supply_Ammunition.h" />
-    <ClInclude Include="Supply\SupplyTypes\Supply_Lubrication.h" />
     <ClInclude Include="SupportClasses\enums.h" />
     <ClInclude Include="GUBS.Interfaces.h" />
     <ClInclude Include="SupportClasses\infrastructure.h" />
@@ -183,11 +191,10 @@
     <ClInclude Include="Supply\SupplyConsumer.h" />
     <ClInclude Include="Supply\SupplyConsumption.h" />
     <ClInclude Include="Supply\SupplyContainer.h" />
-    <ClInclude Include="Supply\SupplyTypes\Supply.h" />
+    <ClInclude Include="Supply\SupplyTypes\SupplyTypeDefinition.h" />
     <ClInclude Include="Supply\SupplyDefinitionCatalog.h" />
     <ClInclude Include="Supply\SupplyLevelDefinition.h" />
     <ClInclude Include="Supply\SupplyRequirement.h" />
-    <ClInclude Include="Supply\SupplyTypes\Supply_Power.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UnitAspects\UnitSupplyAspect.h" />
     <ClInclude Include="Supply\UnitSupplyElement.h" />
@@ -217,11 +224,8 @@
     <ClCompile Include="Supply\Source\SupplyDefinitionCatalog.cpp" />
     <ClCompile Include="Supply\Source\SupplyLevelDefinition.cpp" />
     <ClCompile Include="Supply\Source\SupplyRequirement.cpp" />
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Power.cpp" />
     <ClCompile Include="UnitAspects\Source\UnitSupplyAspect.cpp" />
     <ClCompile Include="Supply\Source\UnitSupplyElement.cpp" />
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Ammunition.cpp" />
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply_Lubrication.cpp" />
     <ClCompile Include="SupportClasses\Volume.cpp" />
     <ClCompile Include="UnitAspects\Source\UnitPropulsionAspect.cpp" />
     <ClCompile Include="Propulsion\Source\UnitPropulsionElement.cpp" />

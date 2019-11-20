@@ -6,6 +6,9 @@
 #include "SupportClasses\infrastructure.h"
 #include "Supply\SupplyContainer.h"
 #include "Supply\ConsumptionDefinition.h"
+#include "Supply\SupplyScopeQuestion.h"
+#include "Supply\SupplyScopeQuestionAnswer.h"
+#include "Supply\SupplyConsumptionQuestion.h"
 
 
 namespace GUBS_Supply
@@ -13,6 +16,9 @@ namespace GUBS_Supply
 
 	using GUBS_Enums::MeasurementUnit;
 	using GUBS_Support::UnitizedValue;
+	using GUBS_Supply::SupplyConsumptionQuestion;
+	using GUBS_Supply::SupplyScopeQuestion;
+	using GUBS_Supply::SupplyScopeQuestionAnswer;
 
 	// SupplyConsumption defines the type of supply
 	//	and the units by which the supply is consumed
@@ -37,75 +43,78 @@ namespace GUBS_Supply
 	//			these two consumption drivers would represent -> travel 10km at 36 kph (10 m/s)
 	//
 
-	class SupplyConsumption : virtual public _Supply
+	class SupplyConsumption : virtual public SupplyTypeDefinition
 	{
 	protected:
 
 		MeasurementUnit _ConsumptionUnit;
-		std::vector<std::unique_ptr<ConsumptionDefinition>>* _ConsumptionDefinitions;
+		std::vector<ConsumptionDefinition> _ConsumptionDefinitions;
 
 	public:
 		SupplyConsumption()
-			: _Supply(), _ConsumptionUnit(MeasurementUnit::NONE)
+			: SupplyTypeDefinition(), _ConsumptionUnit(MeasurementUnit::NONE)
 		{
 			DBUG("SupplyConsumption");
-			_ConsumptionDefinitions = new std::vector<std::unique_ptr<ConsumptionDefinition>>();
 		}
 
-		SupplyConsumption(const _Supply supply, MeasurementUnit consumptionUnit)
-			: _Supply(supply), _ConsumptionUnit(consumptionUnit)
+		SupplyConsumption(const SupplyTypeDefinition supply, MeasurementUnit consumptionUnit)
+			: SupplyTypeDefinition(supply), _ConsumptionUnit(consumptionUnit)
 		{
 			DBUG("SupplyConsumption");
-			_ConsumptionDefinitions = new std::vector<std::unique_ptr<ConsumptionDefinition>>();
 		}
 
-		virtual ~SupplyConsumption()
+		SupplyConsumption(const SupplyConsumption& consumption)
+			: SupplyTypeDefinition(consumption), 
+			_ConsumptionUnit(consumption.ConsumptionUnit()),
+			_ConsumptionDefinitions(consumption._ConsumptionDefinitions)
 		{
-			_ConsumptionDefinitions->clear();
-			delete  _ConsumptionDefinitions;
+			
 		}
+
+		virtual ~SupplyConsumption() = default;
+
+		SupplyConsumption(SupplyConsumption&&) = default;					// move constructor
+		SupplyConsumption& operator=(const SupplyConsumption&) = default;	// copy assignment
+		SupplyConsumption& operator=(SupplyConsumption&&) = default;		// move assignment
 
 		void AddConsumption(MeasurementUnit perRateUnit, double rate, double exponent)
 		{
-			_ConsumptionDefinitions->emplace_back(std::make_unique<ConsumptionDefinition>(perRateUnit, rate, exponent));
+			_ConsumptionDefinitions.emplace_back(ConsumptionDefinition(perRateUnit, rate, exponent));
 		}
 
-		UnitizedValue CalculateConsumption(const std::vector<UnitizedValue>& consumptionDriverAmounts) const
+		UnitizedValue CalculateConsumption(SupplyConsumptionQuestion question) const
 		{
 			UnitizedValue retVal(_ConsumptionUnit, 0);
-			for (auto consumptionDefinition = _ConsumptionDefinitions->cbegin(); consumptionDefinition != _ConsumptionDefinitions->cend(); ++consumptionDefinition)
-			{
-				ConsumptionDefinition* def = consumptionDefinition->get();
-				for_each(consumptionDriverAmounts.cbegin(), consumptionDriverAmounts.cend(), [&](const UnitizedValue value) {
-					retVal.Value += def->CalculateConsumption(value);
-					});
-			}
+			for_each(_ConsumptionDefinitions.cbegin(), _ConsumptionDefinitions.cend(), [&](const ConsumptionDefinition& def)
+					 {
+						 auto [start, end] = question.DriverRange();
+						 for_each(start, end, [&](const UnitizedValue value)
+								  {
+									  retVal.Value += def.CalculateConsumption(value);
+								  });
+					 });
 			return  retVal;
 		}
 
-		UnitizedValue CalculateConsumption(const std::vector<SupplyQuantity>&  consumptionDriverAmounts) const
+		SupplyScopeQuestionAnswer CalculateSupplyScope(SupplyScopeQuestion  consumption) const
 		{
-			std::vector<UnitizedValue> value;
-			for (auto& quantity : consumptionDriverAmounts)
-			{
-				value.emplace_back(UnitizedValue(quantity.SupplyUnits(), quantity.Quantity()));
-			}
-			return CalculateConsumption(value);
-		}
+			SupplyScopeQuestionAnswer retVal;
+			auto [start, end] = consumption.ScopeRange();
 
-		std::vector<UnitizedValue> CalculateSupplyScope(const std::vector<SupplyQuantity>&  consumption) const
-		{
-			std::vector<UnitizedValue> retVal;
-			for_each(consumption.cbegin(), consumption.cend(), [&](const SupplyQuantity value) {
-				if (value.get_key() == get_key())
-				{
-					for (auto itor = _ConsumptionDefinitions->cbegin(); itor != _ConsumptionDefinitions->cend(); ++itor)
-					{
-						ConsumptionDefinition* def = itor->get();
-						retVal.push_back(def->CalculateSupplyScope(value));
-					}
-				}
-			});
+			for_each(start, end,
+					 [&](const SupplyQuantity value)
+					 {
+						 if (value.GetSupplyDef().get_key() == get_key())
+						 {
+							 std::vector<SupplyScopeAnswer> answers;
+							 for_each(_ConsumptionDefinitions.cbegin(), _ConsumptionDefinitions.cend(), [&](const ConsumptionDefinition& def)
+									  {
+										  SupplyScopeAnswer answer(value.GetSupplyDef(), def.CalculateSupplyScope(value.Quantity()));
+										  answers.emplace_back(answer);
+									  });
+							 retVal.AddScopeAnswer(answers);
+						 }
+					 });
 
 			return  retVal;
 		}
@@ -117,7 +126,7 @@ namespace GUBS_Supply
 
 		bool operator==(const SupplyConsumption& rhs) const
 		{
-			return _Supply::operator==(rhs)
+			return SupplyTypeDefinition::operator==(rhs)
 				&& _ConsumptionUnit == rhs._ConsumptionUnit;
 		}
 

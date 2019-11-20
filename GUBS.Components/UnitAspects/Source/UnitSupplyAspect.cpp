@@ -1,80 +1,99 @@
 #include "stdafx.h"
-#include "Supply\SupplyTypes\Supply.h"
 #include "UnitAspects\UnitSupplyAspect.h"
-#include "Supply\SupplyScopeAnswer.h"
 
 namespace GUBS_UnitAspects
 {
 
 
-	UnitSupplyAspect::UnitSupplyAspect() : UnitSupplyElementLookup()
-	{
-		DBUG("UnitSupply");
-	}
 
-
-	UnitSupplyAspect::~UnitSupplyAspect()
+	SupplyConsumptionQuestionAnswer UnitSupplyAspect::Consume(SupplyConsumptionQuestion consumptionDriverAmounts)
 	{
-	}
-
-	void UnitSupplyAspect::Consume(const std::vector<UnitizedValue>& consumptionDriverAmounts)
-	{
+		SupplyConsumptionQuestionAnswer shortfall;
 		for (auto& itor : *this)
 		{
 			auto supply = itor.second.get();
 			UnitizedValue supplyShortFall = supply->Consume(consumptionDriverAmounts);
+			shortfall.AddScopeAnswer(SupplyConsumptionAnswer(supply->UnderlyingSupply(), supplyShortFall));
+
 		}
+		return shortfall;
 	}
 
-	const std::vector<SupplyScopeAnswer> UnitSupplyAspect::CalculateScope(const std::vector<SupplyQuantity>& scopeQuestion) const
+	SupplyConsumptionQuestionAnswer UnitSupplyAspect::CalculateConsumption(SupplyConsumptionQuestion consumptionDriverAmounts) const
 	{
-		std::vector<SupplyScopeAnswer> scopeAnswer;
+		SupplyConsumptionQuestionAnswer requiredSupplies;
 		for (auto& itor : *this)
 		{
 			auto supply = itor.second.get();
+			UnitizedValue supplyRequired = supply->CalculateConsumption(consumptionDriverAmounts);
+			requiredSupplies.AddScopeAnswer(SupplyConsumptionAnswer(supply->UnderlyingSupply(), supplyRequired));
+		}
+		return requiredSupplies;
+	}
+
+	SupplyScopeQuestionAnswer UnitSupplyAspect::CalculateScope(SupplyScopeQuestion scopeQuestion) const
+	{
+		SupplyScopeQuestionAnswer scopeAnswer;
+
+		for (auto& itor : *this)
+		{
+			const auto supply = itor.second.get();
 			auto supplyAnswer = supply->CalculateSupplyScope(scopeQuestion);
-			SupplyScopeAnswer answer(supply->UnderlyingSupply(), supplyAnswer);
-			
-			scopeAnswer.push_back(answer);
+			scopeAnswer.AddScopeAnswer(supplyAnswer);
 		}
 		return scopeAnswer;
 	}
 
-	const std::vector<SupplyScopeAnswer> UnitSupplyAspect::CurrentScope() const
+	SupplyScopeQuestionAnswer UnitSupplyAspect::CurrentScope() const
 	{
-		std::vector<SupplyQuantity> scopeQuestion;
+		SupplyScopeQuestion scopeQuestion;
 
 		for (auto& itor : *this)
 		{
 			auto supply = itor.second.get();
 			auto supplyAvailable = supply->CurrentAvailableSupply();
-			scopeQuestion.push_back(supplyAvailable);
+			scopeQuestion.AddScopeQuestion(supplyAvailable);
 		}
 		return CalculateScope(scopeQuestion);
 	}
 
-	const std::vector<SupplyLevelAnswer> UnitSupplyAspect::DetermineSupplyLevelsFromDrivers(const std::vector<SupplyQuantity>& scopeQuestion) const
+	SupplyLevelQuestionAnswer UnitSupplyAspect::DetermineSupplyLevelsFromDrivers(SupplyConsumptionQuestion scopeQuestion) const
 	{
-		std::vector<SupplyLevelAnswer> scopeAnswer;
+		SupplyLevelQuestionAnswer scopeAnswer;
 		for (auto& unitSupply : *this)
 		{
 			auto supply = unitSupply.second.get();
 			auto supplyAnswer = supply->DetermineSupplyLevelFromDrivers(scopeQuestion);
-			scopeAnswer.push_back(SupplyLevelAnswer(supply->UnderlyingSupply(), supplyAnswer));
+			scopeAnswer.AddSupplyLevelAnswer(SupplyLevelAnswer(supply->UnderlyingSupply(), supplyAnswer));
 		}
 		return scopeAnswer;
 	}
 
-	const std::vector<SupplyLevelAnswer> UnitSupplyAspect::CurrentSupplyLevels() const
+	SupplyLevelQuestionAnswer UnitSupplyAspect::CurrentSupplyLevels() const
 	{
-		std::vector<SupplyLevelAnswer> scopeAnswer;
+		SupplyLevelQuestionAnswer scopeAnswer;
 		for (auto& unitSupply : *this)
 		{
 			auto supply = unitSupply.second.get();
 			auto supplyAnswer = supply->CurrentSupplyLevel();
-			scopeAnswer.push_back(SupplyLevelAnswer(supply->UnderlyingSupply(), supplyAnswer));
+			scopeAnswer.AddSupplyLevelAnswer(SupplyLevelAnswer(supply->UnderlyingSupply(), supplyAnswer));
 		}
 		return scopeAnswer;
+	}
+
+	SupplyLevelAnswer UnitSupplyAspect::CurrentSupplyLevel(SupplyType type) const
+	{
+		SupplyLevelAnswer levelAnswer;
+		for (auto& unitSupply : *this)
+		{
+			auto supply = unitSupply.second.get();
+			if (supply->UnderlyingSupply().isSupplyOfType(type))
+			{
+				auto supplyAnswer = supply->CurrentSupplyLevel();
+				return SupplyLevelAnswer(supply->UnderlyingSupply(), supplyAnswer);
+			}
+		}
+		return SupplyLevelAnswer(SupplyLevelAnswer::EmptySupply, SupplyLevel::NONE);
 	}
 
 	void UnitSupplyAspect::AddSupplyElement(const UnitSupplyElement& supplyElement)

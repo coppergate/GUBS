@@ -3,32 +3,47 @@
 #include <memory>
 
 #include "SupportClasses\infrastructure.h"
-#include "Supply\SupplyTypes\Supply.h" 
+#include "Supply\SupplyTypes\SupplyTypeDefinition.h" 
 
 
 namespace GUBS_Supply
 {
-	class SupplyQuantity : virtual public _Supply
+	class SupplyQuantity
 	{
 
 	protected:
-		double _Quantity;
+		SupplyTypeDefinition _Supply {};
+		double _Quantity = 0;
 
 	public:
-		SupplyQuantity();
-		SupplyQuantity(const _Supply& supplyDef, double quantity);
-		virtual ~SupplyQuantity() {}
+		SupplyQuantity(const SupplyTypeDefinition& supplyDef, double quantity);
+
+		SupplyQuantity() = default;
+		virtual ~SupplyQuantity() = default;						// destructor (virtual if SupplyQuantity is meant to be a base class)
+		SupplyQuantity(const SupplyQuantity&) = default;			// copy constructor
+		SupplyQuantity(SupplyQuantity&&) = default;					// move constructor
+		SupplyQuantity& operator=(SupplyQuantity&&) = default;		// move assignment
 
 		void Add(double quantity);
 
 		bool TryDeplete(double quantity);
 		double ForceDeplete(double quantity);
 
-		double Quantity() const { return _Quantity; }
+		double Quantity() const
+		{
+			return _Quantity;
+		}
 
-		const _Supply& GetSupplyDef() const { return *this; }
-		bool IsDepleted() const { return _Quantity == 0; }
+		SupplyTypeDefinition GetSupplyDef() const
+		{
+			return this->_Supply;
+		}
 
-		const SupplyQuantity& operator=(SupplyQuantity& rhs);
+		bool IsDepleted() const
+		{
+			return _Quantity == 0;
+		}
+
+		SupplyQuantity& operator=(const SupplyQuantity& rhs);
 	};
 }

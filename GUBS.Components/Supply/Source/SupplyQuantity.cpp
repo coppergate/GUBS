@@ -4,12 +4,8 @@
 
 namespace GUBS_Supply
 {
-	SupplyQuantity::SupplyQuantity() : _Supply(), _Quantity(0.0f)
-	{
-		DBUG("SupplyQuantity");
-	}
 
-	SupplyQuantity::SupplyQuantity(const _Supply& supplyDef, double quantity) : _Supply(supplyDef), _Quantity(quantity)
+	SupplyQuantity::SupplyQuantity(const SupplyTypeDefinition& supplyDef, double quantity) : _Supply(supplyDef), _Quantity(quantity)
 	{
 		DBUG("SupplyQuantity");
 	}
@@ -44,9 +40,9 @@ namespace GUBS_Supply
 		}
 	}
 
-	const SupplyQuantity& SupplyQuantity::operator=(SupplyQuantity& rhs)
+	SupplyQuantity& SupplyQuantity::operator=(const SupplyQuantity& rhs)
 	{
-		_Supply::operator=(rhs);
+		_Supply = rhs._Supply;
 		_Quantity = rhs._Quantity;
 		return *this;
 	}
