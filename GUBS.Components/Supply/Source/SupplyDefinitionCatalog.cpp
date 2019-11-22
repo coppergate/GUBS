@@ -46,7 +46,7 @@ namespace GUBS_Supply
 
 		auto ptr = inserted.first;
 		_FullHashLookup.emplace(std::make_pair(supply.fullHash(), supplyPtr));
-		_SupplyTypeLookup.emplace(std::make_pair(supply.get_type(), supplyPtr));
+		_SupplyTypeLookup.emplace(std::make_pair(supply.Type(), supplyPtr));
 		return key;
 	}
 
@@ -58,7 +58,7 @@ namespace GUBS_Supply
 			SupplyTypeDefinition* def = (itor->second)->get();
 			auto hashReference = _FullHashLookup.find(def->fullHash());
 			_FullHashLookup.erase(hashReference);
-			auto keyRange = _SupplyTypeLookup.equal_range(def->get_type());
+			auto keyRange = _SupplyTypeLookup.equal_range(def->Type());
 			for (auto& keyedSupply = keyRange.first; keyedSupply != keyRange.second; ++keyedSupply)
 			{
 				if (keyedSupply->second->get()->fullHash() == def->fullHash()) {

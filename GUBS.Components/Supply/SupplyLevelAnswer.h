@@ -41,7 +41,7 @@ namespace GUBS_Supply
 
 		SupplyType SupplyLevelSupplyType() const
 		{
-			return get_type();
+			return _Type;
 		}
 	};
 

@@ -92,13 +92,12 @@ namespace GUBS_Supply
 		//	the type of the contained supply
 		SupplyType SupplyType() const
 		{
-			return _SupplyQuantity.GetSupplyDef().get_type();
+			return _SupplyQuantity.Type();
 		}
 
-		//	a const ptr to the underlying supply
 		const SupplyTypeDefinition UnderlyingSupply() const
 		{
-			return _SupplyQuantity.GetSupplyDef();
+			return _SupplyQuantity;
 		}
 
 		//	add/modify the supply level information

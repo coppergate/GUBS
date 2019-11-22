@@ -5,7 +5,7 @@
 namespace GUBS_Supply
 {
 
-	SupplyQuantity::SupplyQuantity(const SupplyTypeDefinition& supplyDef, double quantity) : _Supply(supplyDef), _Quantity(quantity)
+	SupplyQuantity::SupplyQuantity(const SupplyTypeDefinition& supplyDef, double quantity) : SupplyTypeDefinition(supplyDef), _Quantity(quantity)
 	{
 		DBUG("SupplyQuantity");
 	}
@@ -14,6 +14,12 @@ namespace GUBS_Supply
 	{
 		_Quantity += quantity;
 	}
+
+	void SupplyQuantity::SetQuantity(double quantity)
+	{
+		_Quantity = quantity;
+	}
+
 
 	bool SupplyQuantity::TryDeplete(double quantity)
 	{
@@ -38,12 +44,5 @@ namespace GUBS_Supply
 			_Quantity = 0;
 			return quantityOver;
 		}
-	}
-
-	SupplyQuantity& SupplyQuantity::operator=(const SupplyQuantity& rhs)
-	{
-		_Supply = rhs._Supply;
-		_Quantity = rhs._Quantity;
-		return *this;
 	}
 }

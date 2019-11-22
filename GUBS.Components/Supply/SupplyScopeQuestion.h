@@ -26,7 +26,7 @@ namespace GUBS_Supply
 
 	typedef std::vector<SupplyQuantity>::const_iterator supply_quantity_iterator;
 
-	class SupplyScopeQuestion : protected std::vector<SupplyQuantity>
+	class SupplyScopeQuestion : private std::vector<SupplyQuantity>
 	{
 
 	public:

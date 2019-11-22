@@ -15,7 +15,7 @@ namespace GUBS_Supply
 	{
 		UnitizedValue consumption = _Consumption.CalculateConsumption(consumptionDriverAmounts);
 		double requiredAmount = _SupplyQuantity.ForceDeplete(consumption.Value);
-		return UnitizedValue(_SupplyQuantity.GetSupplyDef().SupplyUnit(), requiredAmount);
+		return UnitizedValue(_SupplyQuantity.Unit(), requiredAmount);
 	}
 
 	bool UnitSupplyElement::TryConsume(SupplyConsumptionQuestion consumptionDriverAmounts)

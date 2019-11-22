@@ -46,17 +46,12 @@ namespace GUBS_Supply
 
 		SupplyType SupplyType() const noexcept
 		{
-			return _ConsumptionAnswerSupplyType.get_type();
+			return _ConsumptionAnswerSupplyType.Type();
 		}
 
 		std::pair<supply_consumption_answer_iterator, supply_consumption_answer_iterator> AnswerRange() const noexcept
 		{
-			return std::make_pair(cbegin(), cend());
-		}
-
-		void SetSupply(const SupplyTypeDefinition& supply) noexcept
-		{
-			_ConsumptionAnswerSupplyType = supply;
+			return { cbegin(), cend() };
 		}
 
 		void AddConsumptionAnswer(UnitizedValue value)
@@ -64,9 +59,9 @@ namespace GUBS_Supply
 			emplace_back(SupplyQuantity(_ConsumptionAnswerSupplyType, value.Value));
 		}
 
-		void AddConsumptionAnswer(std::vector<SupplyQuantity> value)
+		void AddConsumptionAnswer(std::pair<supply_consumption_answer_iterator, supply_consumption_answer_iterator> value)
 		{
-			insert(end(), value.begin(), value.end());
+			insert(end(), value.first, value.second);
 		}
 	};
 

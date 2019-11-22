@@ -46,21 +46,25 @@ namespace GUBS_Supply
 		virtual ~SupplyScopeAnswer() = default;						// destructor (virtual if SupplyScopeAnswer is meant to be a base class)
 		SupplyScopeAnswer(const SupplyScopeAnswer&) = default;			// copy constructor
 		SupplyScopeAnswer(SupplyScopeAnswer&&) = default;					// move constructor
-		SupplyScopeAnswer& operator=(const SupplyScopeAnswer&) = default;	// copy assignment
+		SupplyScopeAnswer& operator=(const SupplyScopeAnswer&) = delete;	// copy assignment
 		SupplyScopeAnswer& operator=(SupplyScopeAnswer&&) = default;		// move assignment
 
 
 		SupplyType SupplyType() const noexcept
 		{
-			return _ScopeAnswerSupplyType.get_type();
+			return _ScopeAnswerSupplyType.Type();
 		}
 
 		std::pair<scope_answer_iterator, scope_answer_iterator> AnswerRange() const noexcept
 		{
-			return { cbegin(), cend() };
+			if (size() > 0)
+			{
+				return { cbegin(), cend() };
+			}
+			return {scope_answer_iterator() , scope_answer_iterator() };
 		}
 
-		UnitizedValue GetAnswerForMeasure(MeasurementUnit unit) noexcept
+		UnitizedValue GetAnswerForMeasure(MeasurementUnit unit) const noexcept
 		{
 			auto findResult = std::find_if(begin(), end(), [unit](const auto value)
 										   {
@@ -72,11 +76,6 @@ namespace GUBS_Supply
 			}
 			else
 				return UnitizedValue();
-		}
-
-		void SetSupply(SupplyTypeDefinition supply) noexcept
-		{
-			_ScopeAnswerSupplyType = supply;
 		}
 
 		void AddScopeAnswer(UnitizedValue value)

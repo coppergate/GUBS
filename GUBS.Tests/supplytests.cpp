@@ -320,8 +320,7 @@ namespace GUBSTests
 
 			Assert::IsTrue(_SupplyCatalog->RemoveSupplyDefinition(supplyDef.get_key()));
 
-			p = _SupplyCatalog->GetSupplyDef(supplyDef);
-			Assert::IsTrue(p.isEmptySupply());
+			Assert::IsTrue(_SupplyCatalog->GetSupplyDef(supplyDef).isEmptySupply());
 
 			supplies = _SupplyCatalog->GetSupplyOfType(SupplyType::POWER);
 			Assert::AreEqual(( size_t) 0, supplies.size());
@@ -445,10 +444,9 @@ namespace GUBSTests
 
 			Assert::IsTrue(3 == count, L"failed to find all required measurement units for power consumption");
 
-			answer = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION);
-			std::tie(start, end) = answer.AnswerRange();
-
-			UnitizedValue val = answer.GetAnswerForMeasure(MeasurementUnit::AMPERE_PER_SECOND);
+			 std::tie(start, end) = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION).AnswerRange();
+			UnitizedValue val = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION).GetAnswerForMeasure(MeasurementUnit::AMPERE_PER_SECOND);
+			
 			Assert::AreEqual(0.0, val.Value, L"invalid response for answer for invalid measure.");
 
 			count = 0;
@@ -476,8 +474,7 @@ namespace GUBSTests
 						  });
 			Assert::IsTrue(2 == count, L"failed to find all required measurement units for lubrication consumption");
 
-			answer = scopeResult.GetSupplyTypeAnswer(SupplyType::METABOLIC);
-			std::tie(start, end) = answer.AnswerRange();
+		 	std::tie(start, end) = scopeResult.GetSupplyTypeAnswer(SupplyType::METABOLIC).AnswerRange();
 
 			Assert::IsTrue(start == end, L"invalid response for non-existent supply type");
 
@@ -564,9 +561,16 @@ namespace GUBSTests
 			unitSupply.AddSupplyElement(fuelSupply);
 			SupplyConsumptionQuestionAnswer answer = unitSupply.Consume(drivers);
 			auto typeAnswer = answer.GetSupplyTypeAnswer(fuelSupply.SupplyType()); 
-			auto fuelAnswer = *(typeAnswer.AnswerRange().first);
-			Assert::IsTrue(fuelAnswer.Quantity() == 0.000);
-			Assert::IsTrue(fuelAnswer.GetSupplyDef().SupplyUnit() == MeasurementUnit::LITER);
+			int count = 0;
+			auto pair = typeAnswer.AnswerRange();
+			for (auto itor = pair.first; itor < pair.second; ++itor)
+			{
+				Assert::IsTrue(itor->Quantity() == 0.000);
+				++count;
+			}
+
+			Assert::AreEqual(1, count, L"retrieved too many consumption answers");
+			DBUG("ConsumptionDefinitionTests - Exit");
 		}
 
 		TEST_METHOD(CheckUnitSupplyLevel)

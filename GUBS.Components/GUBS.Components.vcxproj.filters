@@ -164,9 +164,6 @@
     <ClCompile Include="Supply\Source\UnitSupplyElement.cpp">
       <Filter>Source Files\Supply</Filter>
     </ClCompile>
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply.cpp">
-      <Filter>Source Files\Supply</Filter>
-    </ClCompile>
     <ClCompile Include="Propulsion\Source\UnitPropulsionElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -187,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="SupportClasses\UnitizedValue.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Supply\Source\SupplyTypes\SupplyTypeDefinition.cpp">
+      <Filter>Source Files\Supply</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

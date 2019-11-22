@@ -5,15 +5,15 @@
 #include "SupportClasses\infrastructure.h"
 #include "Supply\SupplyQuantity.h"
 
-using std::unique_ptr;
 
 namespace GUBS_Supply
 {
+	using std::unique_ptr;
 	using GUBS_Enums::SupplyContainerType;
 
 	class SupplyContainer;
 
-	class SupplyContainer : virtual protected SupplyQuantity
+	class SupplyContainer : public SupplyQuantity
 	{
 	protected:
 		SupplyContainerType _ContainerType = SupplyContainerType::NONE;
@@ -42,7 +42,7 @@ namespace GUBS_Supply
 
 		double getContainerQuantity() const
 		{
-			return getInnerContainerCount() * _Quantity;
+			return getInnerContainerCount() * Quantity();
 		}
 
 		double getInnerContainerCount() const
@@ -60,27 +60,12 @@ namespace GUBS_Supply
 
 		long get_key() const
 		{
-			return _Supply.get_key();
+			return _Id;
 		}
 
 		void Add(double quantity)
 		{
 			SupplyQuantity::Add(quantity);
-		}
-
-		double Quantity() const
-		{
-			return _Quantity;
-		}
-
-		SupplyTypeDefinition GetSupplyDef() const
-		{
-			return this->GetSupplyDef();
-		}
-
-		bool IsDepleted() const
-		{
-			return _Quantity == 0;
 		}
 
 		bool TryDeplete(double quantity)
@@ -93,11 +78,6 @@ namespace GUBS_Supply
 		{
 			double containerQuantity = getTopLevelContainerQuantityFromSupplyQuantity(quantity);
 			return getInnerContainerQuantity() * _InnerCount * SupplyQuantity::ForceDeplete(containerQuantity);
-		}
-
-		void SetQuantity(double supplyUnitQuantity)
-		{
-			_Quantity = supplyUnitQuantity;
 		}
 
 		void SetContainerType(SupplyContainerType  containerType)

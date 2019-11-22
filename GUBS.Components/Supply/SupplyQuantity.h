@@ -8,23 +8,22 @@
 
 namespace GUBS_Supply
 {
-	class SupplyQuantity
+	class SupplyQuantity : public SupplyTypeDefinition
 	{
-
-	protected:
-		SupplyTypeDefinition _Supply {};
 		double _Quantity = 0;
 
 	public:
 		SupplyQuantity(const SupplyTypeDefinition& supplyDef, double quantity);
 
-		SupplyQuantity() = default;
+		SupplyQuantity() = delete;
 		virtual ~SupplyQuantity() = default;						// destructor (virtual if SupplyQuantity is meant to be a base class)
 		SupplyQuantity(const SupplyQuantity&) = default;			// copy constructor
 		SupplyQuantity(SupplyQuantity&&) = default;					// move constructor
+		SupplyQuantity& operator=(const SupplyQuantity& rhs) = default;
 		SupplyQuantity& operator=(SupplyQuantity&&) = default;		// move assignment
 
 		void Add(double quantity);
+		void SetQuantity(double quantity);
 
 		bool TryDeplete(double quantity);
 		double ForceDeplete(double quantity);
@@ -34,16 +33,9 @@ namespace GUBS_Supply
 			return _Quantity;
 		}
 
-		SupplyTypeDefinition GetSupplyDef() const
-		{
-			return this->_Supply;
-		}
-
 		bool IsDepleted() const
 		{
 			return _Quantity == 0;
 		}
-
-		SupplyQuantity& operator=(const SupplyQuantity& rhs);
 	};
 }

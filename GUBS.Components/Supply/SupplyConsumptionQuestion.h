@@ -29,7 +29,7 @@ namespace GUBS_Supply
 
 		void AddApplyToType(SupplyType type)
 		{
-			if (std::find(_SupplyTypesToQuery.cbegin(), _SupplyTypesToQuery.cend(), type) != _SupplyTypesToQuery.end())
+			if (std::find(_SupplyTypesToQuery.cbegin(), _SupplyTypesToQuery.cend(), type) == _SupplyTypesToQuery.end())
 				_SupplyTypesToQuery.emplace_back(type);
 		}
 

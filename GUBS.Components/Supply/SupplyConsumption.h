@@ -104,12 +104,12 @@ namespace GUBS_Supply
 			for_each(start, end,
 					 [&](const SupplyQuantity value)
 					 {
-						 if (value.GetSupplyDef().get_key() == get_key())
+						 if (value.get_key() == get_key())
 						 {
 							 std::vector<SupplyScopeAnswer> answers;
 							 for_each(_ConsumptionDefinitions.cbegin(), _ConsumptionDefinitions.cend(), [&](const ConsumptionDefinition& def)
 									  {
-										  SupplyScopeAnswer answer(value.GetSupplyDef(), def.CalculateSupplyScope(value.Quantity()));
+										  SupplyScopeAnswer answer(value, def.CalculateSupplyScope(value.Quantity()));
 										  answers.emplace_back(answer);
 									  });
 							 retVal.AddScopeAnswer(answers);

@@ -11,7 +11,15 @@ namespace GUBS_Supply
 	public:
 		void AddScopeAnswer(SupplyConsumptionAnswer answer)
 		{
+			auto value = this->find(answer.SupplyType());
+			if (value == this->end())
+			{
 			this->try_emplace(answer.SupplyType(), answer);
+			}
+			else
+			{
+				value->second.AddConsumptionAnswer(answer.AnswerRange());
+			}
 		}
 
 		SupplyConsumptionAnswer GetSupplyTypeAnswer(SupplyType type) const noexcept

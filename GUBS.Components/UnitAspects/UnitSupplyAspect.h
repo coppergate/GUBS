@@ -37,7 +37,7 @@ namespace GUBS_UnitAspects
 	using GUBS_Supply::UnitSupplyElement;
 	using GUBS_Supply::SupplyQuantity;
 
-	class UnitSupplyAspect : public UnitSupplyElementLookup
+	class UnitSupplyAspect : protected UnitSupplyElementLookup
 	{
 	public:
 
@@ -52,7 +52,6 @@ namespace GUBS_UnitAspects
 		SupplyScopeQuestionAnswer CurrentScope() const;
 		//	for the list of drivers what supply quantities would be required
 		SupplyConsumptionQuestionAnswer CalculateConsumption(SupplyConsumptionQuestion consumptionDriverAmounts) const;
-
 
 		//	for the given list of supply quantities determine the supply levels for the unit
 		SupplyLevelQuestionAnswer DetermineSupplyLevelsFromDrivers(SupplyConsumptionQuestion scopeQuestion) const;

@@ -9,9 +9,9 @@ namespace GUBS_Support
 	{
 		//	All linear measurements are in METERS
 
-		double _Height;
-		double _Width;
-		double _Length;
+		double _Height { 0 };
+		double _Width { 0 };
+		double _Length { 0 };
 
 	public:
 
@@ -20,7 +20,7 @@ namespace GUBS_Support
 		{	}
 
 		Volume() = default;
-		virtual ~Volume() = default;						// destructor (virtual if Volume is meant to be a base class)
+		virtual ~Volume() = default;				// destructor (virtual if Volume is meant to be a base class)
 		Volume(const Volume&) = default;			// copy constructor
 		Volume(Volume&&) = default;					// move constructor
 		Volume& operator=(const Volume&) = default;	// copy assignment

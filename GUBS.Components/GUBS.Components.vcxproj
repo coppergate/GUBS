@@ -220,7 +220,7 @@
     <ClCompile Include="Supply\Source\SupplyConsumer.cpp" />
     <ClCompile Include="Supply\Source\SupplyConsumption.cpp" />
     <ClCompile Include="Supply\Source\SupplyContainer.cpp" />
-    <ClCompile Include="Supply\Source\SupplyTypes\Supply.cpp" />
+    <ClCompile Include="Supply\Source\SupplyTypes\SupplyTypeDefinition.cpp" />
     <ClCompile Include="Supply\Source\SupplyDefinitionCatalog.cpp" />
     <ClCompile Include="Supply\Source\SupplyLevelDefinition.cpp" />
     <ClCompile Include="Supply\Source\SupplyRequirement.cpp" />

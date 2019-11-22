@@ -25,7 +25,6 @@ namespace GUBS_Supply
 
 		SupplyLevelDefinition(SupplyLevel lvl);
 
-
 		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, GUBS_UnitAspects::ActionDetractor detractor);
 
 		SupplyLevelDefinition(SupplyLevel lvl, double requiredSupplyLevel, double moveDetractor, double attDetractor, double defDetractor);
