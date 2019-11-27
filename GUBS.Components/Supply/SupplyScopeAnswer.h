@@ -16,16 +16,16 @@ namespace GUBS_Supply
 	//	unitized quantities indicating how long/far the supply
 	//	provides based on the consumption of that supply provided by the unit
 
-	class SupplyScopeAnswer : private std::vector<UnitizedValue>
+	class SupplyScopeAnswer 
 	{
 		SupplyTypeDefinition _ScopeAnswerSupplyType = SupplyTypeDefinition::EmptySupply;
-
+		std::vector<UnitizedValue> _Answers;
 
 	public:
 
 
 		SupplyScopeAnswer(const SupplyTypeDefinition* supply, std::vector<UnitizedValue> answer) noexcept
-			: _ScopeAnswerSupplyType(*supply), std::vector<UnitizedValue>(answer)
+			: _ScopeAnswerSupplyType(*supply), _Answers(answer)
 		{
 			DBUG("SupplyScopeAnswer");
 		}
@@ -36,7 +36,7 @@ namespace GUBS_Supply
 		}
 
 		SupplyScopeAnswer(SupplyTypeDefinition supply, UnitizedValue answer) 
-			: _ScopeAnswerSupplyType(supply), std::vector<UnitizedValue>()
+			: _ScopeAnswerSupplyType(supply), _Answers()
 		{
 			DBUG("SupplyScopeAnswer");
 			AddScopeAnswer(answer);
@@ -57,20 +57,20 @@ namespace GUBS_Supply
 
 		std::pair<scope_answer_iterator, scope_answer_iterator> AnswerRange() const noexcept
 		{
-			if (size() > 0)
+			if (_Answers.size() > 0)
 			{
-				return { cbegin(), cend() };
+				return { _Answers.cbegin(), _Answers.cend() };
 			}
 			return {scope_answer_iterator() , scope_answer_iterator() };
 		}
 
 		UnitizedValue GetAnswerForMeasure(MeasurementUnit unit) const noexcept
 		{
-			auto findResult = std::find_if(begin(), end(), [unit](const auto value)
+			auto findResult = std::find_if(_Answers.cbegin(), _Answers.cend(), [unit](const auto value)
 										   {
 											   return value.Unit == unit;
 										   });
-			if (findResult != cend())
+			if (findResult != _Answers.cend())
 			{
 				return *findResult;
 			}
@@ -95,17 +95,17 @@ namespace GUBS_Supply
 	private:
 		void AddOrUpdate(UnitizedValue value)
 		{
-			auto findVal = std::find_if(begin(), end(), [value](auto check)
+			auto findVal = std::find_if(_Answers.begin(), _Answers.end(), [value](auto check)
 										{
 											return value.Unit == check.Unit;
 										});
-			if (findVal != end())
+			if (findVal != _Answers.end())
 			{
 				findVal->Value += value.Value;
 			}
 			else
 			{
-				emplace_back(value);
+				_Answers.emplace_back(value);
 			}
 
 		}

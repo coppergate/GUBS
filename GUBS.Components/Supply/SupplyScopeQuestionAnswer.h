@@ -8,26 +8,29 @@ namespace GUBS_Supply
 {
 	using GUBS_Support::UnitizedValue;
 
-	class SupplyScopeQuestionAnswer : private std::map<SupplyType, SupplyScopeAnswer>
+	class SupplyScopeQuestionAnswer
 	{
+
+		std::map<SupplyType, SupplyScopeAnswer> _TypeAnswers;
+
 	public:
 		void AddScopeAnswer(SupplyScopeAnswer answer)
 		{
-			auto value = find(answer.SupplyType());
-			if (value != cend())
+			auto value = _TypeAnswers.find(answer.SupplyType());
+			if (value != _TypeAnswers.cend())
 			{
 				value->second.AddScopeAnswer(answer.AnswerRange());
 			}
 			else
 			{
-				try_emplace(answer.SupplyType(), answer);
+				_TypeAnswers.try_emplace(answer.SupplyType(), answer);
 			}
 
 		}
 
 		void AddScopeAnswer(SupplyScopeQuestionAnswer answer)
 		{
-			std::for_each(answer.cbegin(), answer.cend(), [&](const auto listItem)
+			std::for_each(answer._TypeAnswers.cbegin(), answer._TypeAnswers.cend(), [&](const auto listItem)
 						  {
 							  AddScopeAnswer(listItem.second);
 						  });
@@ -43,8 +46,8 @@ namespace GUBS_Supply
 
 		const SupplyScopeAnswer& GetSupplyTypeAnswer(SupplyType type) const noexcept
 		{
-			auto typeAnswer = this->find(type);
-			if (typeAnswer != this->cend())
+			auto typeAnswer = _TypeAnswers.find(type);
+			if (typeAnswer != _TypeAnswers.cend())
 			{
 				return typeAnswer->second;
 			}

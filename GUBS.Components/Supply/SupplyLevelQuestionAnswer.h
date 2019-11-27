@@ -6,18 +6,20 @@
 
 namespace GUBS_Supply
 {
-	class SupplyLevelQuestionAnswer : private std::map<SupplyType, SupplyLevelAnswer>
+	class SupplyLevelQuestionAnswer
 	{
+		std::map<SupplyType, SupplyLevelAnswer> _Answer;
+
 	public:
 		void AddSupplyLevelAnswer(SupplyLevelAnswer answer)
 		{
-			this->try_emplace(answer.SupplyLevelSupplyType(), answer);
+			_Answer.try_emplace(answer.SupplyLevelSupplyType(), answer);
 		}
 
-		SupplyLevelAnswer GetSupplyLevelForType(SupplyType type)
+		SupplyLevelAnswer GetSupplyLevelForType(SupplyType type) const
 		{
-			auto typeAnswer = this->find(type);
-			if (typeAnswer != this->cend())
+			auto typeAnswer = _Answer.find(type);
+			if (typeAnswer != _Answer.cend())
 			{
 				return typeAnswer->second;
 			}

@@ -6,15 +6,17 @@
 namespace GUBS_Supply
 {
 
-	class SupplyConsumptionQuestionAnswer : private std::map<SupplyType, SupplyConsumptionAnswer>
+	class SupplyConsumptionQuestionAnswer
 	{
+		std::map<SupplyType, SupplyConsumptionAnswer> _Answers;
+
 	public:
 		void AddScopeAnswer(SupplyConsumptionAnswer answer)
 		{
-			auto value = this->find(answer.SupplyType());
-			if (value == this->end())
+			auto value = _Answers.find(answer.SupplyType());
+			if (value == _Answers.end())
 			{
-			this->try_emplace(answer.SupplyType(), answer);
+				_Answers.try_emplace(answer.SupplyType(), answer);
 			}
 			else
 			{
@@ -24,8 +26,8 @@ namespace GUBS_Supply
 
 		SupplyConsumptionAnswer GetSupplyTypeAnswer(SupplyType type) const noexcept
 		{
-			auto value = this->find(type);
-			if (value == this->end())
+			auto value = _Answers.find(type);
+			if (value == _Answers.end())
 			{
 				return SupplyConsumptionAnswer();
 			}

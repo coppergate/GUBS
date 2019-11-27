@@ -12,19 +12,20 @@ namespace GUBS_Supply
 	//	provides the driver values required for asking a unit a consumption question
 	//	e.g. ask a unit how much fuel it would consume to travel 10 km at 30 km/hr
 	//	
-	class SupplyConsumptionQuestion : private std::vector<UnitizedValue>
+	class SupplyConsumptionQuestion
 	{
 		std::vector<SupplyType> _SupplyTypesToQuery;
+		std::vector<UnitizedValue> _Drivers;
 
 	public:
 		void AddConsumptionDriver(UnitizedValue driverValue)
 		{
-			emplace_back(driverValue);
+			_Drivers.emplace_back(driverValue);
 		}
 
 		std::pair<const consumption_driver_iterator, const consumption_driver_iterator> DriverRange() const
 		{
-			return { cbegin(), cend() };
+			return { _Drivers.cbegin(), _Drivers.cend() };
 		}
 
 		void AddApplyToType(SupplyType type)

@@ -26,13 +26,15 @@ namespace GUBS_Supply
 
 	typedef std::vector<SupplyQuantity>::const_iterator supply_quantity_iterator;
 
-	class SupplyScopeQuestion : private std::vector<SupplyQuantity>
+	class SupplyScopeQuestion
 	{
+
+		std::vector<SupplyQuantity> _ScopeQuestion;
 
 	public:
 
 		SupplyScopeQuestion(std::vector<SupplyQuantity> question)
-			: std::vector<SupplyQuantity>(question)
+			: _ScopeQuestion(question)
 		{
 			DBUG("SupplyScopeQuestion");
 		}
@@ -46,17 +48,17 @@ namespace GUBS_Supply
 
 		std::pair<supply_quantity_iterator, supply_quantity_iterator> ScopeRange() const
 		{
-			return { cbegin(), cend() };
+			return { _ScopeQuestion.cbegin(), _ScopeQuestion.cend() };
 		}
 
 		void AddScopeQuestion(SupplyQuantity value)
 		{
-			this->emplace_back(value);
+			_ScopeQuestion.emplace_back(value);
 		}
 
 		void AddScopeQuestion(const std::vector<SupplyQuantity> value)
 		{
-			insert(end(), begin(), end());
+			_ScopeQuestion.insert(_ScopeQuestion.cend(), value.cbegin(), value.end());
 		}
 
 

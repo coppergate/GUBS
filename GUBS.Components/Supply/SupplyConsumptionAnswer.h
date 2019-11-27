@@ -17,21 +17,23 @@ namespace GUBS_Supply
 	//	unitized quantities indicating how long/far the supply
 	//	provides based on the consumption of that supply provided by the unit
 
-	class SupplyConsumptionAnswer : private std::vector<SupplyQuantity>
+	class SupplyConsumptionAnswer
 	{
-		SupplyTypeDefinition _ConsumptionAnswerSupplyType = SupplyTypeDefinition::EmptySupply;
+		SupplyTypeDefinition _ConsumptionAnswerSupplyType = SupplyTypeDefinition::EmptySupply; 
+		std::vector<SupplyQuantity> _Answer;
+
 	public:
 
 		SupplyConsumptionAnswer() = default;
 
 		SupplyConsumptionAnswer(const SupplyTypeDefinition& supply, std::vector<SupplyQuantity> answer) noexcept
-			: _ConsumptionAnswerSupplyType(supply), std::vector<SupplyQuantity>(answer)
+			: _ConsumptionAnswerSupplyType(supply), _Answer(answer)
 		{
 			DBUG("SupplyConsumptionAnswer");
 		}
 
 		SupplyConsumptionAnswer(const SupplyTypeDefinition& supply, UnitizedValue answer) noexcept
-			: _ConsumptionAnswerSupplyType(supply), std::vector<SupplyQuantity>()
+			: _ConsumptionAnswerSupplyType(supply), _Answer()
 		{
 			DBUG("SupplyConsumptionAnswer");
 			AddConsumptionAnswer(answer);
@@ -51,17 +53,17 @@ namespace GUBS_Supply
 
 		std::pair<supply_consumption_answer_iterator, supply_consumption_answer_iterator> AnswerRange() const noexcept
 		{
-			return { cbegin(), cend() };
+			return { _Answer.cbegin(), _Answer.cend() };
 		}
 
 		void AddConsumptionAnswer(UnitizedValue value)
 		{
-			emplace_back(SupplyQuantity(_ConsumptionAnswerSupplyType, value.Value));
+			_Answer.emplace_back(SupplyQuantity(_ConsumptionAnswerSupplyType, value.Value));
 		}
 
 		void AddConsumptionAnswer(std::pair<supply_consumption_answer_iterator, supply_consumption_answer_iterator> value)
 		{
-			insert(end(), value.first, value.second);
+			_Answer.insert(_Answer.end(), value.first, value.second);
 		}
 	};
 
