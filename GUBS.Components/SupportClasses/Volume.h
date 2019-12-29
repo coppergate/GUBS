@@ -5,16 +5,12 @@
 namespace GUBS_Support
 {
 
-	class Volume
+	struct Volume
 	{
 		//	All linear measurements are in METERS
-
-		double _Height { 0 };
-		double _Width { 0 };
-		double _Length { 0 };
-
-	public:
-
+		 double _Height { 0 };
+		 double _Width { 0 };
+		 double _Length { 0 };
 
 		Volume(double h, double w, double l) : _Height(h), _Width(w), _Length(l)
 		{	}
@@ -30,5 +26,9 @@ namespace GUBS_Support
 		{
 			return _Height * _Width * _Length;
 		}
+
+		static const Volume EmptyVolume;
 	};
+
+
 }

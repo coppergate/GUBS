@@ -14,9 +14,34 @@ namespace GUBS_Support
 
 	UnitizedValue::UnitizedValue(MeasurementUnit unit, double value) : Value(value), Unit(unit)
 	{
-		DBUG("UnitizedValue - Unit(%d) , Value(%f)", unit, value);
 	}
 
 	const UnitizedValue UnitizedValue::EmptyValue;
+
+	UnitizedValue operator*(const UnitizedValue lhs, double rhs)
+	{
+		return UnitizedValue(lhs.Unit, lhs.Value * rhs);
+	}
+
+	UnitizedValue operator*(double rhs, const UnitizedValue lhs)
+	{
+		return  lhs * rhs;
+	}
+
+	UnitizedValue operator+(const UnitizedValue lhs, double rhs)
+	{
+		return UnitizedValue(lhs.Unit, lhs.Value + rhs);
+	}
+
+	UnitizedValue operator+(double rhs, const UnitizedValue lhs)
+	{
+		return lhs + rhs;
+	}
+
+	UnitizedValue operator+(const UnitizedValue lhs, const UnitizedValue rhs)
+	{
+		assert(lhs.Unit == rhs.Unit);
+		return UnitizedValue(lhs.Unit, lhs.Value + rhs.Value);
+	}
 
 }

@@ -84,16 +84,17 @@ namespace GUBS_Supply
 
 		UnitizedValue CalculateConsumption(SupplyConsumptionQuestion question) const
 		{
-			UnitizedValue retVal(_ConsumptionUnit, 0);
+			double result = 0.0;
+			
 			for_each(_ConsumptionDefinitions.cbegin(), _ConsumptionDefinitions.cend(), [&](const ConsumptionDefinition& def)
 					 {
 						 auto [start, end] = question.DriverRange();
 						 for_each(start, end, [&](const UnitizedValue value)
 								  {
-									  retVal.Value += def.CalculateConsumption(value);
+									  result += def.CalculateConsumption(value);
 								  });
 					 });
-			return  retVal;
+			return  UnitizedValue(_ConsumptionUnit, result);
 		}
 
 		SupplyScopeQuestionAnswer CalculateSupplyScope(SupplyScopeQuestion  consumption) const

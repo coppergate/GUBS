@@ -1,11 +1,15 @@
 #pragma once
-#include "enums.h"
 
-#include "logog.hpp"
 
 
 namespace GUBS_Support
 {
+
+#include <assert.h>
+#include "enums.h"
+#include "logog.hpp"	
+
+
 	using GUBS_Enums::MeasurementUnit;
 
 	struct UnitizedValue
@@ -14,7 +18,7 @@ namespace GUBS_Support
 		MeasurementUnit Unit = MeasurementUnit::NONE;
 
 		UnitizedValue(MeasurementUnit unit, double value);
-	
+
 		UnitizedValue() = default;
 		virtual ~UnitizedValue() = default;						// destructor (virtual if UnitizedValue is meant to be a base class)
 		UnitizedValue(const UnitizedValue&) = default;			// copy constructor
@@ -31,5 +35,12 @@ namespace GUBS_Support
 		static const UnitizedValue EmptyValue;
 
 	};
+
+	UnitizedValue operator*(const UnitizedValue lhs, double rhs);
+	UnitizedValue operator*(double rhs, const UnitizedValue lhs);
+
+	UnitizedValue operator+(const UnitizedValue lhs, double rhs);
+	UnitizedValue operator+(double rhs, const UnitizedValue lhs);
+	UnitizedValue operator+(const UnitizedValue lhs, const UnitizedValue rhs);
 
 }

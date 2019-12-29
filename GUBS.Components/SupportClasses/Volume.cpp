@@ -5,5 +5,6 @@
 
 namespace GUBS_Support
 {
+	const Volume Volume::EmptyVolume;
 
 }

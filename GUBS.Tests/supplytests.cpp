@@ -137,7 +137,8 @@ namespace GUBSTests
 			//	1 piece supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	1 container with supply of 100 pieces
-			SupplyContainer container(supply, SupplyContainerType::RIGID, 100.0);
+			SupplyContainer container(supply, SupplyContainerType::RIGID, 1.0, Volume(1.0, 1.0, 1.0), 100.0);
+
 
 			Assert::AreEqual(100.0, container.getContainerQuantity());
 			Assert::IsTrue(SupplyContainerType::RIGID == container.getContainerType());
@@ -156,22 +157,27 @@ namespace GUBSTests
 			DBUG("CreateNestedSupplyContainerTest");
 			//	1 piece of ammunition definition
 			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("9mm-hp", "9mm, hollow-point, copper jacket", SupplyType::AMMUNITION,
-															 SupplySubType::SOLID, MeasurementUnit::EACH, .0010, Volume(.009, .009, .0026));
+															 SupplySubType::SOLID, MeasurementUnit::EACH, .01260, Volume(.009, .009, .02));
 
 			//	1 piece supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	1 magazine holds 20 rounds
-			SupplyContainer magazine(supply, SupplyContainerType::RIGID, 20.0);
+			SupplyContainer magazine(supply, SupplyContainerType::RIGID, 0.02, Volume(.02, .05, .25), 20.0);
 			//	1 ammo box holds 20 magazines
-			SupplyContainer ammoBox(supply, SupplyContainerType::RIGID, 20.0, magazine);
+			SupplyContainer ammoBox(supply, SupplyContainerType::RIGID, .5, Volume(.22, .12, .26), 20.0, magazine);
 			//	1 pallet of boxes holds 20 ammo boxes
-			SupplyContainer ammoPallet(supply, SupplyContainerType::RIGID, 20.0, ammoBox);
+			SupplyContainer ammoPallet(supply, SupplyContainerType::RIGID, 5, Volume(1.1, .30, .5), 20.0, ammoBox);
 
 			Assert::AreEqual(8000.0, ammoPallet.getContainerQuantity());
 			Assert::AreEqual(400.0, ammoBox.getContainerQuantity());
 			Assert::AreEqual(20.0, magazine.getContainerQuantity());
 
 			Assert::IsTrue(SupplyContainerType::RIGID == ammoBox.getContainerType());
+
+			auto magazineMass = magazine.GetTotalMass();
+			auto boxMass = ammoBox.GetTotalMass();
+			auto palletMass = ammoPallet.GetTotalMass();
+			
 
 			Assert::AreEqual(0.0, ammoPallet.ForceDeplete(50.0));
 			Assert::AreEqual(7950.0, ammoPallet.getContainerQuantity());
@@ -193,7 +199,7 @@ namespace GUBSTests
 			//	1 litre supply quantity
 			SupplyQuantity supply(supplyDef, 1.0);
 			//	Requirement container of 1000 litre
-			SupplyContainer supplyRequirementContainer(supply, SupplyContainerType::RIGID, 1000.0);
+			SupplyContainer supplyRequirementContainer(supply, SupplyContainerType::RIGID, 1.0, Volume(1.0, 1.0, 1.0), 1000.0);
 
 			//	Require 1 container of 1000 litres to be considered fully supplied
 			SupplyRequirement requirement(supplyRequirementContainer);
@@ -360,18 +366,20 @@ namespace GUBSTests
 
 			//
 			int count = 0;
-			while (!unitSupplyAspect.IsDepleted(SupplyType::POWER))
+			while (!unitSupplyAspect.IsDepleted(supplyDef))
 			{
 				SupplyConsumptionQuestionAnswer answer = unitSupplyAspect.Consume(drivers);
 				count++;
 			}
 			Assert::AreEqual(990, count);
 
-			const UnitSupplyElement* testSupply = unitSupplyAspect.GetSupplyElement(SupplyType::POWER);
-			Assert::IsTrue(testSupply->IsDepleted());
+			std::vector<UnitSupplyElement> testSupply = unitSupplyAspect.GetSupplyOfType(supplyDef.Type());
+			Assert::AreEqual((size_t)1, testSupply.size());
+			UnitSupplyElement element = testSupply[0];
+			Assert::IsTrue(element.IsDepleted());
 
-			testSupply = unitSupplyAspect.GetSupplyElement(SupplyType::LUBRICATION);
-			Assert::AreEqual(9.900, testSupply->AvailableQuantity(), 0.0001);
+			testSupply = unitSupplyAspect.GetSupplyOfType(SupplyType::LUBRICATION);
+			Assert::AreEqual(9.900, testSupply[0].AvailableQuantity(), 0.0001);
 
 			DBUG("AddUnitSupply - Exit");
 		}
@@ -605,7 +613,7 @@ namespace GUBSTests
 
 			auto currentLevels = unitSupply.CurrentSupplyLevels();
 
-			while (!unitSupply.IsDepleted(SupplyType::POWER))
+			while (!unitSupply.IsDepleted(supplyFuelDef))
 			{
 				SupplyConsumptionQuestionAnswer answer = unitSupply.Consume(drivers);
 				auto latestLevels = unitSupply.CurrentSupplyLevels();

@@ -3,8 +3,9 @@
 #include <string>
 #include <functional>
 
-#include "SupportClasses\infrastructure.h"
-#include "SupportClasses\Volume.h"
+#include "SupportClasses/infrastructure.h"
+#include "SupportClasses/Volume.h"
+#include "SupportClasses/UnitizedValue.h"
 
 
 namespace GUBS_Supply
@@ -13,6 +14,7 @@ namespace GUBS_Supply
 	using GUBS_Enums::SupplySubType;
 	using GUBS_Enums::MeasurementUnit;
 	using GUBS_Support::Volume;
+	using GUBS_Support::UnitizedValue;
 
 	class SupplyTypeDefinition
 	{
@@ -49,6 +51,16 @@ namespace GUBS_Supply
 		
 		SupplyType Type() const { return _Type; }
 
+		UnitizedValue Mass() const
+		{
+			return UnitizedValue(MeasurementUnit::KILOGRAM, _MassPer);
+		}
+
+		Volume VolumePer() const
+		{
+			return _VolumePer;
+		}
+
 		unsigned long typeHash() const;
 		unsigned long fullHash() const;
 
@@ -79,8 +91,9 @@ namespace GUBS_Supply
 		SupplySubType _SubType = SupplySubType::NONE;
 		MeasurementUnit _Unit = MeasurementUnit::NONE;
 
-		//	All mass measurements are in KILOGRAMS
-		double _MassPer = 0;
+		//	All mass measurements are in kg
+		double _MassPer;
+		//	ALL VOLUMES ARE IN m^3
 		Volume _VolumePer;
 
 		std::string _Name = "";

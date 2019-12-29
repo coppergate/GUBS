@@ -4,8 +4,6 @@
 namespace GUBS_UnitAspects
 {
 
-
-
 	SupplyConsumptionQuestionAnswer UnitSupplyAspect::Consume(SupplyConsumptionQuestion consumptionDriverAmounts)
 	{
 		SupplyConsumptionQuestionAnswer shortfall;
@@ -114,27 +112,29 @@ namespace GUBS_UnitAspects
 		}
 	}
 
-	bool UnitSupplyAspect::IsDepleted(SupplyType type)
+	bool UnitSupplyAspect::IsDepleted(SupplyTypeDefinition type)
 	{
-		auto element = GetSupplyElement(type);
-		if (element != nullptr)
+		for (auto& supply : *this)
 		{
-			return element->IsDepleted();
+			if (supply.first == type.get_key())
+			{
+				return supply.second->IsDepleted();
+			}
 		}
 		return true;
 	}
 
-	const UnitSupplyElement* UnitSupplyAspect::GetSupplyElement(SupplyType type)
+	std::vector<UnitSupplyElement> UnitSupplyAspect::GetSupplyOfType(SupplyType type)
 	{
-		for (auto itor = cbegin(); itor != cend(); itor++)
+		std::vector<UnitSupplyElement> result;
+		for (auto& supply : *this)
 		{
-			UnitSupplyElement* elem = itor->second.get();
-			if (elem->SupplyType() == type)
+			if (supply.second->SupplyType() == type)
 			{
-				return elem;
+				result.push_back(*(supply.second.get()));
 			}
 		}
-		return nullptr;
+		return result;
 	}
 
 

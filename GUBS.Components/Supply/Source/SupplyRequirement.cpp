@@ -12,7 +12,7 @@ namespace GUBS_Supply
 	using std::for_each;
 
 	SupplyRequirement::SupplyRequirement(const SupplyTypeDefinition& supplyDef)
-		: _SupplyContainer(supplyDef), _SupplyLevels(get_supplyLevels((size_t) SupplyLevel::SUPPLY_LEVELS))
+		: _SupplyContainer(supplyDef, supplyDef.Mass().Value, supplyDef.VolumePer()), _SupplyLevels(get_supplyLevels((size_t) SupplyLevel::SUPPLY_LEVELS))
 	{
 		DBUG("SupplyRequirement");
 	}

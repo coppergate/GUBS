@@ -44,7 +44,7 @@ namespace GUBS_Supply
 						  });
 		}
 
-		const SupplyScopeAnswer& GetSupplyTypeAnswer(SupplyType type) const noexcept
+		SupplyScopeAnswer GetSupplyTypeAnswer(SupplyType type) const noexcept
 		{
 			auto typeAnswer = _TypeAnswers.find(type);
 			if (typeAnswer != _TypeAnswers.cend())

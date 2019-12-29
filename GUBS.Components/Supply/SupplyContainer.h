@@ -4,12 +4,14 @@
 
 #include "SupportClasses\infrastructure.h"
 #include "Supply\SupplyQuantity.h"
+#include "SupportClasses\UnitizedValue.h"
 
 
 namespace GUBS_Supply
 {
 	using std::unique_ptr;
 	using GUBS_Enums::SupplyContainerType;
+	using GUBS_Support::UnitizedValue;
 
 	class SupplyContainer;
 
@@ -21,13 +23,18 @@ namespace GUBS_Supply
 
 		unique_ptr<SupplyContainer> _InnerContainer;
 
+		//	ALL MASSES ARE IN kg
+		double _ContainerMass;
+		//	ALL VOLUMES ARE IN m^3
+		Volume _ContainerVolume;
+
 	public:
 
-		SupplyContainer(SupplyTypeDefinition supplyDef);
+		SupplyContainer(SupplyTypeDefinition supplyDef, double containerMass, Volume containerVolume);
 		SupplyContainer(const SupplyContainer& container);
 
-		SupplyContainer(SupplyQuantity supply, SupplyContainerType containerType, double containerQuantity);
-		SupplyContainer(SupplyQuantity supply, SupplyContainerType containerType, double containerQuantity, SupplyContainer innerContainer);
+		SupplyContainer(SupplyQuantity supply, SupplyContainerType containerType, double containerMass, Volume containerVolume, double containerQuantity);
+		SupplyContainer(SupplyQuantity supply, SupplyContainerType containerType, double containerMass, Volume containerVolume, double containerQuantity, SupplyContainer innerContainer);
 
 		SupplyContainer() = default;
 		virtual ~SupplyContainer() = default;							// destructor (virtual if SupplyContainer is meant to be a base class)
@@ -58,15 +65,16 @@ namespace GUBS_Supply
 			return _InnerCount;
 		}
 
-		long get_key() const
+		UnitizedValue GetContainerMass() const
 		{
-			return _Id;
+			return UnitizedValue(MeasurementUnit::KILOGRAM, _ContainerMass);
 		}
 
-		void Add(double quantity)
+		UnitizedValue GetTotalMass() const
 		{
-			SupplyQuantity::Add(quantity);
+			return  GetContainerMass() + getInnerContainerMass();
 		}
+	
 
 		bool TryDeplete(double quantity)
 		{
@@ -90,6 +98,15 @@ namespace GUBS_Supply
 			_InnerCount = containerQuantity;
 		}
 
+		void SetContainerMass(double mass)
+		{
+			_ContainerMass = mass;
+		}
+
+		void SetContainerVolume(Volume volume)
+		{
+			_ContainerVolume = volume;
+		}
 
 	protected:
 		double getInnerContainerQuantity() const
@@ -98,6 +115,14 @@ namespace GUBS_Supply
 			if (_InnerContainer)
 				innerContainerCount = _InnerCount * _InnerContainer->getInnerContainerQuantity();
 			return innerContainerCount;
+		}
+		
+		UnitizedValue getInnerContainerMass() const
+		{
+			UnitizedValue innerContainerMass(MeasurementUnit::KILOGRAM, Mass().Value);
+			if (_InnerContainer)
+				innerContainerMass =  _InnerContainer->getInnerContainerMass() * Quantity();
+			return innerContainerMass * _InnerCount;
 		}
 
 		double getTopLevelContainerQuantityFromSupplyQuantity(double supplyQuantity)
