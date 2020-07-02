@@ -5,6 +5,7 @@
 
 #include "Supply\SupplyDefinitionCatalog.h"
 
+using std::make_unique;
 
 
 namespace GUBS_Supply
@@ -13,7 +14,7 @@ namespace GUBS_Supply
 	{
 		_SupplyTypeLookup.clear();
 		_FullHashLookup.clear();
-		for (auto& ptr : _DefinedSupplies) 
+		for (auto& ptr : _DefinedSupplies)
 		{
 			delete ptr.second;
 		}
@@ -34,19 +35,17 @@ namespace GUBS_Supply
 
 		if (hashReference != _FullHashLookup.end())
 		{
-			return hashReference->second->get()->get_key();
+			return (*hashReference).second.get_key();
 		}
 
 		key = _NextKey++;
 
 		LOGOG_DEBUG("EnsureSupplyDefinition - emplace - (%lu)", key);
-		std::unique_ptr<SupplyTypeDefinition>* supplyPtr = new std::unique_ptr<SupplyTypeDefinition>(new SupplyTypeDefinition(key, supply));
-		auto pair = std::make_pair(key, supplyPtr);
-		auto inserted = _DefinedSupplies.emplace(pair);
+		std::unique_ptr<SupplyTypeDefinition>* def = new std::unique_ptr<SupplyTypeDefinition>(new SupplyTypeDefinition(key, supply));
 
-		auto ptr = inserted.first;
-		_FullHashLookup.emplace(std::make_pair(supply.fullHash(), supplyPtr));
-		_SupplyTypeLookup.emplace(std::make_pair(supply.Type(), supplyPtr));
+		_DefinedSupplies.emplace(key, def);
+		_FullHashLookup.emplace(supply.fullHash(), *(def->get()));
+		_SupplyTypeLookup.emplace(supply.Type(), *(def->get()));
 		return key;
 	}
 
@@ -55,18 +54,17 @@ namespace GUBS_Supply
 		SupplyLookup::iterator itor = _DefinedSupplies.find(key);
 		if (itor != _DefinedSupplies.end())
 		{
-			SupplyTypeDefinition* def = (itor->second)->get();
-			auto hashReference = _FullHashLookup.find(def->fullHash());
+			SupplyTypeDefinition def = *(itor->second->get());
+			auto hashReference = _FullHashLookup.find(def.fullHash());
 			_FullHashLookup.erase(hashReference);
-			auto keyRange = _SupplyTypeLookup.equal_range(def->Type());
+			auto keyRange = _SupplyTypeLookup.equal_range(def.Type());
 			for (auto& keyedSupply = keyRange.first; keyedSupply != keyRange.second; ++keyedSupply)
 			{
-				if (keyedSupply->second->get()->fullHash() == def->fullHash()) {
+				if (keyedSupply->second.fullHash() == def.fullHash()) {
 					_SupplyTypeLookup.erase(keyedSupply);
 					break;
 				}
 			}
-			delete itor->second;
 			_DefinedSupplies.erase(itor);
 			return true;
 		}
@@ -79,7 +77,7 @@ namespace GUBS_Supply
 		const SupplyLookup::iterator itor = _DefinedSupplies.find(id);
 		if (itor != _DefinedSupplies.end())
 		{
-			return SupplyTypeDefinition((itor->second)->get()->get_key(), *((itor->second)->get()));
+			return SupplyTypeDefinition(itor->second->get()->get_key(), *(itor->second->get()));
 		}
 		return SupplyTypeDefinition::EmptySupply;
 	}
@@ -89,8 +87,8 @@ namespace GUBS_Supply
 		auto itor = _FullHashLookup.find(supplyAsKey.fullHash());
 		if (itor != _FullHashLookup.end())
 		{
-			auto supply = itor->second->get();
-			return SupplyTypeDefinition(supply->get_key(), *(supply));
+			auto supply = itor->second;
+			return SupplyTypeDefinition(supply.get_key(), supply);
 		}
 		return SupplyTypeDefinition::EmptySupply;
 	}
@@ -101,7 +99,7 @@ namespace GUBS_Supply
 		auto keyRange = _SupplyTypeLookup.equal_range(type);
 		for (auto itor = keyRange.first; itor != keyRange.second; ++itor)
 		{
-			retVal.push_back(SupplyTypeDefinition(itor->second->get()->get_key(), *(itor->second->get())));
+			retVal.push_back(SupplyTypeDefinition(itor->second.get_key(), itor->second));
 		}
 		return retVal;
 	}

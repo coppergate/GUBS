@@ -1,4 +1,10 @@
+
+
 #include "stdafx.h"
+
+#define _CRTDBG_MAP_ALLOC //to get more details
+
+
 #include "CppUnitTest.h"
 
 #include <memory>
@@ -44,15 +50,18 @@ namespace GUBSTests
 
 	*/
 
-	std::unique_ptr<SupplyDefinitionCatalog> _SupplyCatalog = std::make_unique<SupplyDefinitionCatalog>();
 
 	TEST_CLASS(SupplyTests)
 	{
+		std::unique_ptr<SupplyDefinitionCatalog> _SupplyCatalog = std::make_unique<SupplyDefinitionCatalog>();
 
 		logog::LogFile* errFile;
 		logog::Cout* logOut;
 		logog::Cerr* errOut;
 
+		_CrtMemState sOld;
+		_CrtMemState sNew;
+		_CrtMemState sDiff;
 
 	public:
 
@@ -71,7 +80,30 @@ namespace GUBSTests
 			delete errOut;
 
 			LOGOG_SHUTDOWN();
+
+		
 		}
+
+		TEST_METHOD_INITIALIZE(MemorySnapshot)
+		{
+			OutputDebugString(L"-----------_CrtMemCheckpoint ---------\n");
+			_CrtMemCheckpoint(&sOld); //take a snapchot
+		}
+
+		TEST_METHOD_CLEANUP(MemoryDifference)
+		{
+			_CrtMemCheckpoint(&sNew); //take a snapchot 
+			if (_CrtMemDifference(&sDiff, &sOld, &sNew)) // if there is a difference
+			{
+				OutputDebugString(L"-----------_CrtMemDumpStatistics ---------\n");
+				_CrtMemDumpStatistics(&sDiff);
+				OutputDebugString(L"-----------_CrtMemDumpAllObjectsSince ---------\n");
+				_CrtMemDumpAllObjectsSince(&sOld);
+				OutputDebugString(L"-----------_CrtDumpMemoryLeaks ---------\n");
+				_CrtDumpMemoryLeaks();
+			}
+		}
+
 
 		TEST_METHOD(CreateSupplyDefTest)
 		{
@@ -83,6 +115,7 @@ namespace GUBSTests
 			Assert::IsFalse(supplyDef.isEmptySupply());
 			Assert::IsTrue(supplyDef.HasUnitsOf(MeasurementUnit::EACH));
 			DBUG("CreateSupplyDefTest - Exit");
+			OutputDebugString(L"-----------CreateSupplyDefTest ---------");
 		}
 
 		TEST_METHOD(CreateSupplyDefCatalogTest)
@@ -103,6 +136,7 @@ namespace GUBSTests
 			Assert::IsFalse(_SupplyCatalog->RemoveSupplyDefinition(key));
 
 			DBUG("CreateSupplyDefCatalogTest - Exit");
+			OutputDebugString(L"-----------CreateSupplyDefCatalogTest ---------");
 		}
 
 		TEST_METHOD(CreateSupplyTest)
@@ -125,6 +159,7 @@ namespace GUBSTests
 			Assert::IsTrue(supply.IsDepleted());
 
 			DBUG("CreateSupplyTest - Exit");
+			OutputDebugString(L"-----------CreateSupplyTest ---------");
 		}
 
 		TEST_METHOD(CreateSupplyContainerTest)
@@ -148,7 +183,7 @@ namespace GUBSTests
 			Assert::AreEqual(25.0, container.ForceDeplete(75.0));
 
 			DBUG("CreateSupplyContainerTest - Exit");
-
+			OutputDebugString(L"-----------CreateSupplyContainerTest ---------");
 		}
 
 
@@ -186,6 +221,7 @@ namespace GUBSTests
 			Assert::AreEqual(25.0, ammoPallet.ForceDeplete(75.0), 0.01);
 
 			DBUG("CreateNestedSupplyContainerTest - Exit");
+			OutputDebugString(L"-----------CreateNestedSupplyContainerTest ---------");
 		}
 
 
@@ -228,6 +264,7 @@ namespace GUBSTests
 			Assert::AreEqual(1.0, def.GetActionDetractor()._Movement);
 
 			DBUG("CreateSupplyRequirementTest - Exit");
+			OutputDebugString(L"-----------CreateSupplyRequirementTest ---------");
 		}
 
 		TEST_METHOD(CreateSupplyConsumptionTest)
@@ -292,6 +329,7 @@ namespace GUBSTests
 					 });
 
 			DBUG("CreateSupplyConsumptionTest - Exit");
+			OutputDebugString(L"-----------CreateSupplyConsumptionTest ---------");
 		}
 
 		TEST_METHOD(CatalogLookup)
@@ -332,17 +370,16 @@ namespace GUBSTests
 			Assert::AreEqual(( size_t) 0, supplies.size());
 
 			DBUG("CatalogLookup - Exit");
+			OutputDebugString(L"-----------CatalogLookupCatalogLookup ---------");
 		}
 
 		TEST_METHOD(AddUnitSupply)
 		{
-			DBUG("AddUnitSupply");
-
 			//	1 litre of diesel fuel
 			SupplyTypeDefinition supplyDef = _SupplyCatalog->CreateSupply("DIESEL", "Liquid Diesel Fuel", SupplyType::POWER,
 															 SupplySubType::LIQUID, MeasurementUnit::LITER, 0.83, Volume(.1, .1, .1));
 
-			//	1 litre of oil
+			////	1 litre of oil
 			SupplyTypeDefinition supplyOilDef = _SupplyCatalog->CreateSupply("LUBRICATING OIL - 10w40", "Engine oil, multi-weight", SupplyType::LUBRICATION,
 																SupplySubType::LIQUID, MeasurementUnit::LITER, 0.93, Volume(.1, .1, .1));
 
@@ -382,6 +419,7 @@ namespace GUBSTests
 			Assert::AreEqual(9.900, testSupply[0].AvailableQuantity(), 0.0001);
 
 			DBUG("AddUnitSupply - Exit");
+
 		}
 
 		TEST_METHOD(CheckUnitSupplyScope)
@@ -412,81 +450,86 @@ namespace GUBSTests
 			scopeQuestion.AddScopeQuestion(SupplyQuantity(supplyOilDef, 5));
 
 			SupplyScopeQuestionAnswer scopeResult = unitSupply.CalculateScope(scopeQuestion);
+			{
+				SupplyScopeAnswer answer = scopeResult.GetSupplyTypeAnswer(SupplyType::POWER);
+				auto [start, end] = answer.AnswerRange();
 
-			SupplyScopeAnswer answer = scopeResult.GetSupplyTypeAnswer(SupplyType::POWER);
-			auto [start, end] = answer.AnswerRange();
+				int count = 0;
+				std::for_each(start, end, [&count] (const auto answer)
+					{
+						if (answer.Unit == MeasurementUnit::METER)
+						{
+							//	total possible travel distance (without velocity correction)
+							//	10,000 km....  
+							++count;
+							Assert::AreEqual(10000000.0, answer.Value);
+						}
+						else if (answer.Unit == MeasurementUnit::METER_PER_SECOND)
+						{
+							//	Physically not certain what this means.  Basically what's
+							//	the maximum velocity this unit could acquire given a velocity ^ 2
+							//	fuel consumption requirement. (about 11,257 km/hr)
+							++count;
+							Assert::AreEqual(3162.277, answer.Value, .001);
+						}
 
-			int count = 0;
-			std::for_each(start, end, [& count](const auto answer)
-						  {
-							  if (answer.Unit == MeasurementUnit::METER)
-							  {
-								  //	total possible travel distance (without velocity correction)
-								  //	10,000 km....  
-								  ++count;
-								  Assert::AreEqual(10000000.0, answer.Value);
-							  }
-							  else if (answer.Unit == MeasurementUnit::METER_PER_SECOND)
-							  {
-								  //	Physically not certain what this means.  Basically what's
-								  //	the maximum velocity this unit could acquire given a velocity ^ 2
-								  //	fuel consumption requirement. (about 11,257 km/hr)
-								  ++count;
-								  Assert::AreEqual(3162.277, answer.Value, .001);
-							  }
+						else if (answer.Unit == MeasurementUnit::SECOND)
+						{
+							//	This represents the length of time the unit could sit at 'idle' 
+							//	on 1000 liters of fuel  (about 31 years)
 
-							  else if (answer.Unit == MeasurementUnit::SECOND)
-							  {
-								  //	This represents the length of time the unit could sit at 'idle' 
-								  //	on 1000 liters of fuel  (about 31 years)
+							++count;
+							Assert::AreEqual(1.00000000e+09, answer.Value);
+						}
+						else
+						{
+							Assert::Fail(L"Invalid scope answer units.");
+						}
 
-								  ++count;
-								  Assert::AreEqual(1.00000000e+09, answer.Value);
-							  }
-							  else
-							  {
-								  Assert::Fail(L"Invalid scope answer units.");
-							  }
+					});
 
-						  });
+				Assert::IsTrue(3 == count, L"failed to find all required measurement units for power consumption");
+			}
+			{
+				SupplyScopeAnswer answer = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION);
 
-			Assert::IsTrue(3 == count, L"failed to find all required measurement units for power consumption");
+				auto [start, end] = answer.AnswerRange();
+				UnitizedValue val = answer.GetAnswerForMeasure(MeasurementUnit::AMPERE_PER_SECOND);
 
-			 std::tie(start, end) = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION).AnswerRange();
-			UnitizedValue val = scopeResult.GetSupplyTypeAnswer(SupplyType::LUBRICATION).GetAnswerForMeasure(MeasurementUnit::AMPERE_PER_SECOND);
-			
-			Assert::AreEqual(0.0, val.Value, L"invalid response for answer for invalid measure.");
+				Assert::AreEqual(0.0, val.Value, L"invalid response for answer for invalid measure.");
 
-			count = 0;
-			std::for_each(start, end, [&count](const auto answer)
-						  {
-							  if (answer.Unit == MeasurementUnit::METER)
-							  {
-								  //	total possible travel distance with respect to lubricating oil
-								  //	500,000 km....  
-								  ++count;
-								  Assert::AreEqual(500000000.0, answer.Value);
-							  }
-							  else if (answer.Unit == MeasurementUnit::SECOND)
-							  {
-								  //	This represents the length of time the unit could sit at 'idle' 
-								  //	on 5 liters of oil  (about 155 years)
-								  ++count;
-								  Assert::AreEqual(5.00000000e+09, answer.Value);
-							  }
-							  else
-							  {
-								  Assert::Fail(L"Invalid scope answer units.");
-							  }
+				int count = 0;
+				std::for_each(start, end, [&count] (const auto answer)
+					{
+						if (answer.Unit == MeasurementUnit::METER)
+						{
+							//	total possible travel distance with respect to lubricating oil
+							//	500,000 km....  
+							++count;
+							Assert::AreEqual(500000000.0, answer.Value);
+						}
+						else if (answer.Unit == MeasurementUnit::SECOND)
+						{
+							//	This represents the length of time the unit could sit at 'idle' 
+							//	on 5 liters of oil  (about 155 years)
+							++count;
+							Assert::AreEqual(5.00000000e+09, answer.Value);
+						}
+						else
+						{
+							Assert::Fail(L"Invalid scope answer units.");
+						}
 
-						  });
-			Assert::IsTrue(2 == count, L"failed to find all required measurement units for lubrication consumption");
+					});
+				Assert::IsTrue(2 == count, L"failed to find all required measurement units for lubrication consumption");
+			}
+			{
+				auto [start, end] = scopeResult.GetSupplyTypeAnswer(SupplyType::METABOLIC).AnswerRange();
 
-		 	std::tie(start, end) = scopeResult.GetSupplyTypeAnswer(SupplyType::METABOLIC).AnswerRange();
-
-			Assert::IsTrue(start == end, L"invalid response for non-existent supply type");
-
+				Assert::IsTrue(start == end, L"invalid response for non-existent supply type");
+			}
 			DBUG("CheckUnitSupplyScope - Exit");
+			OutputDebugString(L"-----------CheckUnitSupplyScope ---------");
 		}
 
 		TEST_METHOD(CheckUnitSupplyCurrentScope)
@@ -551,6 +594,7 @@ namespace GUBSTests
 			Assert::AreEqual(898900000.0, finalScopeTime.Value, 0.01);
 
 			DBUG("CheckUnitSupplyCurrentScope - Exit");
+			OutputDebugString(L"-----------CheckUnitSupplyCurrentScope ---------");
 		}
 
 		TEST_METHOD(ConsumptionDefinitionTests)
@@ -579,6 +623,7 @@ namespace GUBSTests
 
 			Assert::AreEqual(1, count, L"retrieved too many consumption answers");
 			DBUG("ConsumptionDefinitionTests - Exit");
+			OutputDebugString(L"-----------ConsumptionDefinitionTests ---------");
 		}
 
 		TEST_METHOD(CheckUnitSupplyLevel)
@@ -663,6 +708,7 @@ namespace GUBSTests
 			Assert::AreEqual(0.0, value.Value);
 
 			DBUG("CheckUnitSupplyLevel - Exit");
+			OutputDebugString(L"-----------CheckUnitSupplyLevel ---------");
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

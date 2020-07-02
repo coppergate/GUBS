@@ -13,8 +13,8 @@ namespace GUBS_Supply
 {
 	typedef std::map< unsigned long, std::unique_ptr<SupplyTypeDefinition>* > SupplyLookup;
 
-	typedef std::map< unsigned long, const std::unique_ptr<SupplyTypeDefinition>*> CrossReferenceLookup;
-	typedef std::multimap< SupplyType, const std::unique_ptr<SupplyTypeDefinition>*> MultiCrossReferenceLookup;
+	typedef std::map< unsigned long, SupplyTypeDefinition&> CrossReferenceLookup;
+	typedef std::multimap< SupplyType, SupplyTypeDefinition&> MultiCrossReferenceLookup;
 
 	class SupplyDefinitionCatalog
 	{
