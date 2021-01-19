@@ -1,5 +1,5 @@
 # GUBS
-
+(Targeting c++20)
 (Generic Universal Battle Simulator)
 
 The first step creating a generic battle simulator was to tackle an aspect that many battle simulators, at least in our opinion, fail to account for in a meanignful way: Supply and Logistics. The goal generally was to come up with an supply/consumption model that would allow any simulated activity to be goverened consistenly with respect to all aspects of its 'existence'. 
