@@ -5,20 +5,16 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUBS", "GUBS\GUBS.vcxproj", "{4255AAC3-5B2A-4FAA-A2AB-F0ADB322CAD9}"
 	ProjectSection(ProjectDependencies) = postProject
-		{E279CE91-159D-48F1-859E-EB74045FBD73} = {E279CE91-159D-48F1-859E-EB74045FBD73}
 		{605CB1D5-0BD3-4937-A983-1100B6554592} = {605CB1D5-0BD3-4937-A983-1100B6554592}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUBS.Components", "GUBS.Components\GUBS.Components.vcxproj", "{605CB1D5-0BD3-4937-A983-1100B6554592}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E279CE91-159D-48F1-859E-EB74045FBD73} = {E279CE91-159D-48F1-859E-EB74045FBD73}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUBS.Tests", "GUBS.Tests\GUBS.Tests.vcxproj", "{2B6378B6-BC63-458B-8E77-AB488257BFF8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalCode", "ExternalCode", "{5BA1484C-8553-4990-8EDA-48C3099D09A4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logog.vs", "..\ExternalCode\logog.vs\logog.vs.vcxproj", "{E279CE91-159D-48F1-859E-EB74045FBD73}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Logog", "Logog\Logog.vcxproj", "{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,20 +48,20 @@ Global
 		{2B6378B6-BC63-458B-8E77-AB488257BFF8}.Release|x64.Build.0 = Release|x64
 		{2B6378B6-BC63-458B-8E77-AB488257BFF8}.Release|x86.ActiveCfg = Release|Win32
 		{2B6378B6-BC63-458B-8E77-AB488257BFF8}.Release|x86.Build.0 = Release|Win32
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Debug|x64.ActiveCfg = Debug|x64
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Debug|x64.Build.0 = Debug|x64
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Debug|x86.ActiveCfg = Debug|Win32
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Debug|x86.Build.0 = Debug|Win32
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Release|x64.ActiveCfg = Release|x64
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Release|x64.Build.0 = Release|x64
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Release|x86.ActiveCfg = Release|Win32
-		{E279CE91-159D-48F1-859E-EB74045FBD73}.Release|x86.Build.0 = Release|Win32
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Debug|x64.ActiveCfg = Debug|x64
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Debug|x64.Build.0 = Debug|x64
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Debug|x86.ActiveCfg = Debug|Win32
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Debug|x86.Build.0 = Debug|Win32
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Release|x64.ActiveCfg = Release|x64
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Release|x64.Build.0 = Release|x64
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Release|x86.ActiveCfg = Release|Win32
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E279CE91-159D-48F1-859E-EB74045FBD73} = {5BA1484C-8553-4990-8EDA-48C3099D09A4}
+		{CD61E6EF-DC26-42C0-B63F-EA43C917C1D2} = {5BA1484C-8553-4990-8EDA-48C3099D09A4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {52359D89-BD9E-41D4-ABAD-7C5134A86277}

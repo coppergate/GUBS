@@ -78,7 +78,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>D:\GUBS\x64\Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>D:\GUBS\GUBS.Components;D:\ExternalCode\logog\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)GUBS.Components;$(SolutionDir)..\logog\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -121,7 +121,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>GUBS.Components.lib;logog.vs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GUBS.Components.lib;logog.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
       <AdditionalLibraryDirectories>..\x64\Debug\;</AdditionalLibraryDirectories>
     </Link>
